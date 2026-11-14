@@ -1,0 +1,109 @@
+[gd_scene load_steps=4 format=3 uid="uid://dck371vflyli2"]
+
+[ext_resource type="Script" uid="uid://bosabbwainlaa" path="res://scripts/menus/main_menu.gd" id="1_l6d0p"]
+[ext_resource type="Shader" path="res://shaders/main_menu_atmosphere.gdshader" id="2_atmosphere"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_atmosphere"]
+shader = ExtResource("2_atmosphere")
+
+[node name="MainMenu" type="Control" unique_id=906757497]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_l6d0p")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1737117191]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.13, 0.1, 0.12, 1)
+material = SubResource("ShaderMaterial_atmosphere")
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1857383441]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=457970138]
+custom_minimum_size = Vector2(470, 0)
+layout_mode = 2
+alignment = 1
+
+[node name="LogoLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1122023767]
+layout_mode = 2
+theme_override_font_sizes/font_size = 82
+theme_override_colors/font_color = Color(1, 0.67, 0.31, 1)
+theme_override_colors/font_outline_color = Color(0.12, 0.045, 0.025, 1)
+theme_override_constants/outline_size = 3
+text = "M A R S"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.72, 0.91, 0.94, 1)
+text = "L A S T   S U R V I V O R"
+horizontal_alignment = 1
+
+[node name="MissionLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.77, 0.63, 0.54, 1)
+text = "ARES 01  /  MARS RESEARCH COLONY"
+horizontal_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/VBoxContainer" unique_id=1077414370]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="NewGameButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1714882493]
+custom_minimum_size = Vector2(300, 48)
+layout_mode = 2
+text = "Novo Jogo"
+
+[node name="LoadGameButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=101841249]
+custom_minimum_size = Vector2(300, 48)
+layout_mode = 2
+text = "Carregar Jogo"
+
+[node name="SettingsButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=127286704]
+custom_minimum_size = Vector2(300, 48)
+layout_mode = 2
+text = "Configurações"
+
+[node name="CreditsButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=740703169]
+custom_minimum_size = Vector2(300, 48)
+layout_mode = 2
+text = "Créditos"
+
+[node name="ExitButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=340396316]
+custom_minimum_size = Vector2(300, 48)
+layout_mode = 2
+text = "Sair"
+
+[node name="NewGameDialog" type="ConfirmationDialog" parent="." unique_id=302792180]
+initial_position = 2
+dialog_text = "Já existe uma partida salva. Deseja iniciar um novo jogo?"
+
+[node name="ExitDialog" type="ConfirmationDialog" parent="." unique_id=821534330]
+initial_position = 2
+dialog_text = "Deseja sair do jogo?"
+
+[node name="MessageDialog" type="AcceptDialog" parent="." unique_id=700568024]
+initial_position = 2
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/NewGameButton" to="." method="_on_new_game_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/LoadGameButton" to="." method="_on_load_game_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/SettingsButton" to="." method="_on_settings_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/CreditsButton" to="." method="_on_credits_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/ExitButton" to="." method="_on_exit_pressed"]
+[connection signal="confirmed" from="NewGameDialog" to="." method="_on_confirm_new_game"]
+[connection signal="confirmed" from="ExitDialog" to="." method="_on_confirm_exit"]

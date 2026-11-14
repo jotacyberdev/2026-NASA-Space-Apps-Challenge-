@@ -1,0 +1,70 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/characters/astronaut.gd" id="1_5xik2"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_1"]
+radius = 15.0
+height = 20.0
+
+[node name="Astronaut" type="CharacterBody2D"]
+script = ExtResource("1_5xik2")
+
+[node name="ContactShadow" type="Polygon2D" parent="."]
+position = Vector2(0, 17)
+color = Color(0.07, 0.035, 0.03, 0.48)
+polygon = PackedVector2Array(-20, -3, -14, -8, 14, -8, 20, -3, 15, 4, -15, 4)
+
+[node name="Backpack" type="Polygon2D" parent="."]
+position = Vector2(0, 4)
+color = Color(0.28, 0.37, 0.42, 1)
+polygon = PackedVector2Array(-11, -7, -15, -4, -15, 10, -10, 14, 10, 14, 15, 10, 15, -4, 11, -7)
+
+[node name="BodyVisual" type="Polygon2D" parent="."]
+color = Color(0.82, 0.73, 0.90, 1)
+polygon = PackedVector2Array(-10, -7, -15, -3, -14, 4, -10, 5, -10, 15, -6, 19, 6, 19, 10, 15, 10, 5, 14, 4, 15, -3, 10, -7)
+
+[node name="ChestPlate" type="Polygon2D" parent="."]
+position = Vector2(0, 4)
+color = Color(0.47, 0.61, 0.66, 1)
+polygon = PackedVector2Array(-6, -5, 6, -5, 7, 6, 4, 9, -4, 9, -7, 6)
+
+[node name="ChestStripe" type="Polygon2D" parent="."]
+position = Vector2(0, 2)
+color = Color(0.97, 0.63, 0.25, 1)
+polygon = PackedVector2Array(-5, 0, 5, 0, 5, 2, -5, 2)
+
+[node name="Helmet" type="Polygon2D" parent="."]
+position = Vector2(0, -8)
+color = Color(0.78, 0.87, 0.88, 1)
+polygon = PackedVector2Array(-10, -4, -9, -11, -4, -15, 5, -15, 10, -10, 11, -2, 7, 5, -7, 5)
+
+[node name="Visor" type="Polygon2D" parent="Helmet"]
+position = Vector2(0, -4)
+color = Color(0.09, 0.25, 0.33, 1)
+polygon = PackedVector2Array(-7, -4, -4, -8, 4, -8, 7, -4, 5, 1, -5, 1)
+
+[node name="VisorReflection" type="Polygon2D" parent="Helmet/Visor"]
+position = Vector2(0, -1)
+color = Color(0.70, 0.93, 0.96, 0.64)
+polygon = PackedVector2Array(-5, -3, -2, -6, 0, -6, -4, 0, -6, 0)
+
+[node name="HelmetTrim" type="Polygon2D" parent="Helmet"]
+position = Vector2(0, 4)
+color = Color(0.93, 0.60, 0.24, 1)
+polygon = PackedVector2Array(-7, 0, 7, 0, 5, 2, -5, 2)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_1")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+enabled = true
+position_smoothing_enabled = true
+position_smoothing_speed = 10.0
+limit_left = 0
+limit_top = 0
+limit_right = 2000
+limit_bottom = 1200
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+visible = false
+texture_filter = 1

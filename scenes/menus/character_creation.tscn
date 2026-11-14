@@ -1,0 +1,141 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/menus/character_creation.gd" id="1_s4vhm"]
+
+[node name="CharacterCreation" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_s4vhm")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.15, 0.19, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="CenterContainer/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBox" type="VBoxContainer" parent="CenterContainer/Panel/Margin"]
+layout_mode = 2
+
+[node name="Header" type="Label" parent="CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+text = "Criação da astronauta"
+horizontal_alignment = 1
+
+[node name="NameContainer" type="VBoxContainer" parent="CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="CenterContainer/Panel/Margin/VBox/NameContainer"]
+layout_mode = 2
+text = "Nome"
+
+[node name="NameEdit" type="LineEdit" parent="CenterContainer/Panel/Margin/VBox/NameContainer"]
+layout_mode = 2
+placeholder_text = "Digite seu nome"
+max_length = 16
+
+[node name="GenderContainer" type="HBoxContainer" parent="CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+
+[node name="GenderLabel" type="Label" parent="CenterContainer/Panel/Margin/VBox/GenderContainer"]
+layout_mode = 2
+text = "Gênero"
+
+[node name="MaleButton" type="Button" parent="CenterContainer/Panel/Margin/VBox/GenderContainer"]
+layout_mode = 2
+text = "Masculino"
+toggle_mode = true
+
+[node name="FemaleButton" type="Button" parent="CenterContainer/Panel/Margin/VBox/GenderContainer"]
+layout_mode = 2
+text = "Feminino"
+toggle_mode = true
+
+[node name="PetContainer" type="HBoxContainer" parent="CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+
+[node name="PetLabel" type="Label" parent="CenterContainer/Panel/Margin/VBox/PetContainer"]
+layout_mode = 2
+text = "Mascote"
+
+[node name="DogButton" type="Button" parent="CenterContainer/Panel/Margin/VBox/PetContainer"]
+layout_mode = 2
+text = "Cachorro"
+toggle_mode = true
+
+[node name="MonkeyButton" type="Button" parent="CenterContainer/Panel/Margin/VBox/PetContainer"]
+layout_mode = 2
+text = "Macaco"
+toggle_mode = true
+
+[node name="DifficultyContainer" type="HBoxContainer" parent="CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+
+[node name="DifficultyLabel" type="Label" parent="CenterContainer/Panel/Margin/VBox/DifficultyContainer"]
+layout_mode = 2
+text = "Dificuldade"
+
+[node name="EasyButton" type="Button" parent="CenterContainer/Panel/Margin/VBox/DifficultyContainer"]
+layout_mode = 2
+text = "Fácil"
+toggle_mode = true
+
+[node name="NormalButton" type="Button" parent="CenterContainer/Panel/Margin/VBox/DifficultyContainer"]
+layout_mode = 2
+text = "Normal"
+toggle_mode = true
+
+[node name="HardButton" type="Button" parent="CenterContainer/Panel/Margin/VBox/DifficultyContainer"]
+layout_mode = 2
+text = "Difícil"
+toggle_mode = true
+
+[node name="ErrorLabel" type="Label" parent="CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+text = ""
+custom_minimum_size = Vector2(0, 26)
+
+[node name="Buttons" type="HBoxContainer" parent="CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="BackButton" type="Button" parent="CenterContainer/Panel/Margin/VBox/Buttons"]
+layout_mode = 2
+text = "Voltar"
+
+[node name="ContinueButton" type="Button" parent="CenterContainer/Panel/Margin/VBox/Buttons"]
+layout_mode = 2
+text = "Continuar"
+
+[connection signal="pressed" from="CenterContainer/Panel/Margin/VBox/GenderContainer/MaleButton" to="." method="_on_gender_male_pressed"]
+[connection signal="pressed" from="CenterContainer/Panel/Margin/VBox/GenderContainer/FemaleButton" to="." method="_on_gender_female_pressed"]
+[connection signal="pressed" from="CenterContainer/Panel/Margin/VBox/PetContainer/DogButton" to="." method="_on_pet_dog_pressed"]
+[connection signal="pressed" from="CenterContainer/Panel/Margin/VBox/PetContainer/MonkeyButton" to="." method="_on_pet_monkey_pressed"]
+[connection signal="pressed" from="CenterContainer/Panel/Margin/VBox/DifficultyContainer/EasyButton" to="." method="_on_difficulty_easy_pressed"]
+[connection signal="pressed" from="CenterContainer/Panel/Margin/VBox/DifficultyContainer/NormalButton" to="." method="_on_difficulty_normal_pressed"]
+[connection signal="pressed" from="CenterContainer/Panel/Margin/VBox/DifficultyContainer/HardButton" to="." method="_on_difficulty_hard_pressed"]
+[connection signal="pressed" from="CenterContainer/Panel/Margin/VBox/Buttons/ContinueButton" to="." method="_on_continue_pressed"]
+[connection signal="pressed" from="CenterContainer/Panel/Margin/VBox/Buttons/BackButton" to="." method="_on_back_pressed"]

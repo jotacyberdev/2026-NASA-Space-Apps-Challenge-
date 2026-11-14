@@ -1,0 +1,88 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/story/introduction.gd" id="1_3nyx3"]
+[ext_resource type="Script" path="res://scripts/story/introduction_illustration.gd" id="2_illustration"]
+
+[node name="Introduction" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_3nyx3")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.10, 0.08, 0.13, 1)
+
+[node name="Panel" type="PanelContainer" parent="Background"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 80
+offset_top = 60
+offset_right = -80
+offset_bottom = -60
+
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="Background/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Content" type="VBoxContainer" parent="Background/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="IllustrationPanel" type="Control" parent="Background/Panel/Margin/Content"]
+custom_minimum_size = Vector2(0, 270)
+layout_mode = 2
+script = ExtResource("2_illustration")
+
+[node name="TitleLabel" type="Label" parent="Background/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.95, 0.69, 0.43, 1)
+text = "Missão em Marte"
+
+[node name="BodyLabel" type="Label" parent="Background/Panel/Margin/Content"]
+layout_mode = 2
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.84, 0.89, 0.91, 1)
+text = "A astronauta ..."
+
+[node name="PageLabel" type="Label" parent="Background/Panel/Margin/Content"]
+layout_mode = 2
+text = "1/4"
+horizontal_alignment = 2
+
+[node name="Controls" type="HBoxContainer" parent="Background/Panel/Margin/Content"]
+layout_mode = 2
+alignment = 0
+
+[node name="SkipButton" type="Button" parent="Background/Panel/Margin/Content/Controls"]
+custom_minimum_size = Vector2(190, 42)
+layout_mode = 2
+text = "Pular introdução"
+
+[node name="Spacer" type="Control" parent="Background/Panel/Margin/Content/Controls"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ContinueButton" type="Button" parent="Background/Panel/Margin/Content/Controls"]
+custom_minimum_size = Vector2(220, 46)
+layout_mode = 2
+text = "Continuar"
+
+[connection signal="pressed" from="Background/Panel/Margin/Content/Controls/ContinueButton" to="." method="_on_continue_pressed"]
+[connection signal="pressed" from="Background/Panel/Margin/Content/Controls/SkipButton" to="." method="_on_skip_pressed"]

@@ -1,0 +1,269 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_rts0q"]
+[ext_resource type="Script" path="res://scripts/ui/astronaut_portrait.gd" id="2_portrait"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_rts0q")
+
+[node name="TopLeftPanel" type="PanelContainer" parent="."]
+anchors_preset = 0
+offset_left = 18
+offset_top = 18
+offset_right = 400
+offset_bottom = 230
+
+[node name="MarginContainer" type="MarginContainer" parent="TopLeftPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TopLeftPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="Portrait" type="Control" parent="TopLeftPanel/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(76, 76)
+layout_mode = 2
+script = ExtResource("2_portrait")
+
+[node name="InfoContainer" type="VBoxContainer" parent="TopLeftPanel/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="NameLabel" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer"]
+layout_mode = 2
+text = "Astra"
+
+[node name="CrewLabel" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer"]
+layout_mode = 2
+text = "NASA / FEMININO"
+
+[node name="StatsContainer" type="VBoxContainer" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer"]
+layout_mode = 2
+
+[node name="HealthRow" type="HBoxContainer" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer"]
+layout_mode = 2
+
+[node name="HealthLabel" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/HealthRow"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Vida"
+
+[node name="HealthBar" type="ProgressBar" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/HealthRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 14)
+layout_mode = 2
+show_percentage = false
+max_value = 100.0
+value = 100.0
+
+[node name="OxygenRow" type="HBoxContainer" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer"]
+layout_mode = 2
+
+[node name="OxygenLabel" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/OxygenRow"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Oxigênio"
+
+[node name="OxygenBar" type="ProgressBar" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/OxygenRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 14)
+layout_mode = 2
+show_percentage = false
+max_value = 100.0
+value = 100.0
+
+[node name="EnergyRow" type="HBoxContainer" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer"]
+layout_mode = 2
+
+[node name="EnergyLabel" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/EnergyRow"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Energia"
+
+[node name="EnergyBar" type="ProgressBar" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/EnergyRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 14)
+layout_mode = 2
+show_percentage = false
+max_value = 100.0
+value = 100.0
+
+[node name="HungerRow" type="HBoxContainer" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer"]
+layout_mode = 2
+
+[node name="HungerLabel" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/HungerRow"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Fome"
+
+[node name="HungerBar" type="ProgressBar" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/HungerRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 14)
+layout_mode = 2
+show_percentage = false
+max_value = 100.0
+value = 100.0
+
+[node name="WaterRow" type="HBoxContainer" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer"]
+layout_mode = 2
+
+[node name="WaterLabel" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/WaterRow"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Água"
+
+[node name="WaterBar" type="ProgressBar" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/WaterRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 14)
+layout_mode = 2
+show_percentage = false
+max_value = 100.0
+value = 100.0
+
+[node name="ObjectivePanel" type="PanelContainer" parent="."]
+anchors_preset = 0
+offset_left = 22
+offset_top = 236
+offset_right = 440
+offset_bottom = 310
+
+[node name="MarginContainer" type="MarginContainer" parent="ObjectivePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="ObjectiveLabel" type="Label" parent="ObjectivePanel/MarginContainer"]
+layout_mode = 2
+text = "Objetivo do tutorial: acordar e preparar o acampamento."
+autowrap_mode = 3
+
+[node name="TopRightPanel" type="PanelContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -194
+offset_top = 18
+offset_right = -18
+offset_bottom = 96
+
+[node name="MarginContainer" type="MarginContainer" parent="TopRightPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 7
+
+[node name="ClockContent" type="VBoxContainer" parent="TopRightPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="ClockRow" type="HBoxContainer" parent="TopRightPanel/MarginContainer/ClockContent"]
+layout_mode = 2
+
+[node name="TimeLabel" type="Label" parent="TopRightPanel/MarginContainer/ClockContent/ClockRow"]
+layout_mode = 2
+text = "06:00"
+
+[node name="ClockSeparator" type="Label" parent="TopRightPanel/MarginContainer/ClockContent/ClockRow"]
+layout_mode = 2
+text = "•"
+theme_override_colors/font_color = Color(0.47, 0.63, 0.69, 1)
+
+[node name="SolLabel" type="Label" parent="TopRightPanel/MarginContainer/ClockContent/ClockRow"]
+layout_mode = 2
+text = "SOL 1"
+
+[node name="DayLabel" type="Label" parent="TopRightPanel/MarginContainer/ClockContent"]
+layout_mode = 2
+text = "DIA 1"
+
+[node name="BottomLeftPanel" type="PanelContainer" parent="."]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 18
+offset_top = -246
+offset_right = 224
+offset_bottom = -18
+
+[node name="MarginContainer" type="MarginContainer" parent="BottomLeftPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="Buttons" type="VBoxContainer" parent="BottomLeftPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="InventoryButton" type="Button" parent="BottomLeftPanel/MarginContainer/Buttons"]
+layout_mode = 2
+text = "Inventário"
+
+[node name="ConstructionButton" type="Button" parent="BottomLeftPanel/MarginContainer/Buttons"]
+layout_mode = 2
+text = "Construção"
+
+[node name="MapButton" type="Button" parent="BottomLeftPanel/MarginContainer/Buttons"]
+layout_mode = 2
+text = "Mapa"
+
+[node name="JournalButton" type="Button" parent="BottomLeftPanel/MarginContainer/Buttons"]
+layout_mode = 2
+text = "Diário"
+
+[node name="SettingsButton" type="Button" parent="BottomLeftPanel/MarginContainer/Buttons"]
+layout_mode = 2
+text = "Configurações"
+
+[node name="QuickBar" type="PanelContainer" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -374
+offset_top = -114
+offset_right = 374
+offset_bottom = -8
+
+grow_horizontal = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="QuickBar"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="QuickBar/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Slot1" type="Button" parent="QuickBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "1 - Picareta"
+
+[node name="Slot2" type="Button" parent="QuickBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "2 - Chave inglesa"
+
+[node name="Slot3" type="Button" parent="QuickBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "3 - Minério"
+
+[node name="Slot4" type="Button" parent="QuickBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "4 - Sucata"
+
+[node name="Slot5" type="Button" parent="QuickBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "5 - Batata"
+
+[node name="Slot6" type="Button" parent="QuickBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "6 - Água"

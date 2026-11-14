@@ -1,0 +1,331 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/characters/astronaut.tscn" id="1_0c7a1"]
+[ext_resource type="Shader" path="res://shaders/mars_terrain.gdshader" id="terrain_shader"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="hud_scene"]
+[ext_resource type="Script" path="res://scripts/world/mars_base.gd" id="mars_base_script"]
+[ext_resource type="Script" path="res://scripts/world/damaged_capsule.gd" id="capsule_script"]
+[ext_resource type="PackedScene" path="res://scenes/vehicles/rover_explorer.tscn" id="rover_scene"]
+[ext_resource type="PackedScene" path="res://scenes/characters/pet_companion.tscn" id="pet_scene"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_left"]
+size = Vector2(120, 1200)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_top"]
+size = Vector2(2000, 120)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_right"]
+size = Vector2(120, 1200)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bottom"]
+size = Vector2(2000, 120)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rock"]
+radius = 40.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_terrain"]
+shader = ExtResource("terrain_shader")
+
+[node name="MarsBase" type="Node2D"]
+script = ExtResource("mars_base_script")
+
+[node name="SurvivalTimer" type="Timer" parent="."]
+wait_time = 1.0
+
+[node name="Ground" type="ColorRect" parent="."]
+offset_right = 2000.0
+offset_bottom = 1200.0
+mouse_filter = 2
+color = Color(1, 1, 1, 1)
+material = SubResource("ShaderMaterial_terrain")
+
+[node name="AtmosphericLight" type="CanvasModulate" parent="."]
+color = Color(1, 0.91, 0.84, 1)
+
+[node name="CraterDetail" type="Polygon2D" parent="."]
+position = Vector2(390, 300)
+color = Color(0.66, 0.24, 0.18, 0.6)
+polygon = PackedVector2Array(-120, -90, 0, -150, 180, -90, 210, 140, -10, 200, -170, 110)
+visible = false
+
+[node name="OuterWalls" type="Node2D" parent="."]
+
+[node name="WallLeft" type="StaticBody2D" parent="OuterWalls"]
+position = Vector2(-60, 600)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="OuterWalls/WallLeft"]
+shape = SubResource("RectangleShape2D_left")
+
+[node name="WallTop" type="StaticBody2D" parent="OuterWalls"]
+position = Vector2(1000, -60)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="OuterWalls/WallTop"]
+shape = SubResource("RectangleShape2D_top")
+
+[node name="WallRight" type="StaticBody2D" parent="OuterWalls"]
+position = Vector2(2060, 600)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="OuterWalls/WallRight"]
+shape = SubResource("RectangleShape2D_right")
+
+[node name="WallBottom" type="StaticBody2D" parent="OuterWalls"]
+position = Vector2(1000, 1260)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="OuterWalls/WallBottom"]
+shape = SubResource("RectangleShape2D_bottom")
+
+[node name="Rocks" type="Node2D" parent="."]
+
+[node name="Rock1" type="StaticBody2D" parent="Rocks"]
+position = Vector2(350, 820)
+
+[node name="ContactShadow" type="Polygon2D" parent="Rocks/Rock1"]
+position = Vector2(4, 66)
+color = Color(0.055, 0.022, 0.02, 0.58)
+polygon = PackedVector2Array(-58, -8, -42, -16, 8, -18, 53, -10, 61, -2, 36, 7, -20, 9, -53, 3)
+
+[node name="Visual" type="Polygon2D" parent="Rocks/Rock1"]
+color = Color(0.46, 0.40, 0.38, 1)
+polygon = PackedVector2Array(-40, -30, 20, -55, 70, -10, 80, 50, 0, 90, -70, 50)
+
+[node name="LitFacet" type="Polygon2D" parent="Rocks/Rock1"]
+color = Color(0.76, 0.48, 0.34, 0.56)
+polygon = PackedVector2Array(-40, -30, 20, -55, 2, 4, -28, 22)
+
+[node name="ShadowFacet" type="Polygon2D" parent="Rocks/Rock1"]
+color = Color(0.16, 0.11, 0.12, 0.48)
+polygon = PackedVector2Array(20, -55, 70, -10, 80, 50, 0, 90, 2, 4)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Rocks/Rock1"]
+shape = SubResource("CircleShape2D_rock")
+
+[node name="Rock2" type="StaticBody2D" parent="Rocks"]
+position = Vector2(720, 300)
+
+[node name="ContactShadow" type="Polygon2D" parent="Rocks/Rock2"]
+position = Vector2(12, 75)
+color = Color(0.055, 0.022, 0.02, 0.56)
+polygon = PackedVector2Array(-70, -8, -52, -18, 12, -20, 64, -12, 74, -1, 42, 8, -24, 9, -62, 3)
+
+[node name="Visual" type="Polygon2D" parent="Rocks/Rock2"]
+color = Color(0.52, 0.38, 0.34, 1)
+polygon = PackedVector2Array(-58, -44, 10, -84, 90, -30, 110, 52, 28, 96, -76, 62)
+
+[node name="LitFacet" type="Polygon2D" parent="Rocks/Rock2"]
+color = Color(0.83, 0.56, 0.38, 0.52)
+polygon = PackedVector2Array(-58, -44, 10, -84, 16, -2, -28, 20)
+
+[node name="ShadowFacet" type="Polygon2D" parent="Rocks/Rock2"]
+color = Color(0.15, 0.09, 0.10, 0.5)
+polygon = PackedVector2Array(10, -84, 90, -30, 110, 52, 28, 96, 16, -2)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Rocks/Rock2"]
+shape = SubResource("CircleShape2D_rock")
+
+[node name="Rock3" type="StaticBody2D" parent="Rocks"]
+position = Vector2(1400, 880)
+
+[node name="ContactShadow" type="Polygon2D" parent="Rocks/Rock3"]
+position = Vector2(10, 47)
+color = Color(0.055, 0.022, 0.02, 0.56)
+polygon = PackedVector2Array(-58, -8, -38, -15, 12, -17, 53, -9, 62, -1, 34, 7, -20, 8, -50, 3)
+
+[node name="Visual" type="Polygon2D" parent="Rocks/Rock3"]
+color = Color(0.45, 0.34, 0.31, 1)
+polygon = PackedVector2Array(-36, -32, 18, -52, 66, -18, 82, 42, 26, 62, -55, 28)
+
+[node name="LitFacet" type="Polygon2D" parent="Rocks/Rock3"]
+color = Color(0.79, 0.52, 0.36, 0.5)
+polygon = PackedVector2Array(-36, -32, 18, -52, 8, 2, -20, 15)
+
+[node name="ShadowFacet" type="Polygon2D" parent="Rocks/Rock3"]
+color = Color(0.13, 0.08, 0.09, 0.52)
+polygon = PackedVector2Array(18, -52, 66, -18, 82, 42, 26, 62, 8, 2)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Rocks/Rock3"]
+shape = SubResource("CircleShape2D_rock")
+
+[node name="Rock4" type="StaticBody2D" parent="Rocks"]
+position = Vector2(1640, 365)
+
+[node name="ContactShadow" type="Polygon2D" parent="Rocks/Rock4"]
+position = Vector2(12, 90)
+color = Color(0.055, 0.022, 0.02, 0.56)
+polygon = PackedVector2Array(-70, -8, -52, -18, 12, -20, 64, -12, 74, -1, 42, 8, -24, 9, -62, 3)
+
+[node name="Visual" type="Polygon2D" parent="Rocks/Rock4"]
+color = Color(0.58, 0.42, 0.34, 1)
+polygon = PackedVector2Array(-58, -42, 6, -92, 84, -62, 104, 20, 50, 116, -42, 80)
+
+[node name="LitFacet" type="Polygon2D" parent="Rocks/Rock4"]
+color = Color(0.87, 0.60, 0.39, 0.52)
+polygon = PackedVector2Array(-58, -42, 6, -92, 15, -3, -28, 22)
+
+[node name="ShadowFacet" type="Polygon2D" parent="Rocks/Rock4"]
+color = Color(0.16, 0.10, 0.10, 0.5)
+polygon = PackedVector2Array(6, -92, 84, -62, 104, 20, 50, 116, 15, -3)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Rocks/Rock4"]
+shape = SubResource("CircleShape2D_rock")
+
+[node name="StructureGhosts" type="Node2D" parent="."]
+
+[node name="HabitatGhost" type="Polygon2D" parent="StructureGhosts"]
+position = Vector2(520, 540)
+color = Color(0.72, 0.72, 0.72, 0.35)
+polygon = PackedVector2Array(-90, -60, 90, -60, 90, 60, -90, 60)
+visible = false
+
+[node name="GreenhouseGhost" type="Polygon2D" parent="StructureGhosts"]
+position = Vector2(760, 640)
+color = Color(0.68, 0.86, 0.66, 0.35)
+polygon = PackedVector2Array(-70, -50, 70, -50, 70, 50, -70, 50)
+visible = false
+
+[node name="MinerGhost" type="Polygon2D" parent="StructureGhosts"]
+position = Vector2(1180, 660)
+color = Color(0.57, 0.60, 0.65, 0.35)
+polygon = PackedVector2Array(-82, -54, 82, -54, 82, 54, -82, 54)
+visible = false
+
+[node name="WaterTankGhost" type="Polygon2D" parent="StructureGhosts"]
+position = Vector2(1460, 560)
+color = Color(0.5, 0.8, 0.9, 0.35)
+polygon = PackedVector2Array(-60, -60, 60, -60, 60, 60, -60, 60)
+visible = false
+
+[node name="SolarGhost" type="Polygon2D" parent="StructureGhosts"]
+position = Vector2(1690, 760)
+color = Color(0.9, 0.85, 0.35, 0.30)
+polygon = PackedVector2Array(-80, 0, 0, -70, 80, 0, 0, 70)
+visible = false
+
+[node name="WorkshopGhost" type="Polygon2D" parent="StructureGhosts"]
+position = Vector2(1180, 380)
+color = Color(0.5, 0.52, 0.58, 0.28)
+polygon = PackedVector2Array(-70, -60, 70, -60, 70, 60, -70, 60)
+visible = false
+
+[node name="AntennaGhost" type="Polygon2D" parent="StructureGhosts"]
+position = Vector2(1650, 220)
+color = Color(0.68, 0.76, 0.92, 0.28)
+polygon = PackedVector2Array(-20, -80, 20, -80, 20, 80, -20, 80)
+visible = false
+
+[node name="DamagedShip" type="Node2D" parent="."]
+position = Vector2(1750, 900)
+script = ExtResource("capsule_script")
+
+[node name="ExplorationVehicle" type="Node2D" parent="."]
+position = Vector2(930, 900)
+visible = false
+
+[node name="ContactShadow" type="Polygon2D" parent="ExplorationVehicle"]
+position = Vector2(0, 22)
+color = Color(0.08, 0.035, 0.03, 0.48)
+polygon = PackedVector2Array(-115, -8, -94, -20, 0, -25, 94, -20, 115, -8, 92, 7, -92, 7)
+
+[node name="WheelLeft" type="Polygon2D" parent="ExplorationVehicle"]
+position = Vector2(-51, 15)
+color = Color(0.12, 0.16, 0.18, 1)
+polygon = PackedVector2Array(-22, -9, -15, -18, 15, -18, 22, -9, 22, 10, 14, 18, -15, 18, -22, 10)
+
+[node name="WheelRight" type="Polygon2D" parent="ExplorationVehicle"]
+position = Vector2(51, 15)
+color = Color(0.12, 0.16, 0.18, 1)
+polygon = PackedVector2Array(-22, -9, -15, -18, 15, -18, 22, -9, 22, 10, 14, 18, -15, 18, -22, 10)
+
+[node name="Body" type="Polygon2D" parent="ExplorationVehicle"]
+color = Color(0.72, 0.77, 0.82, 1)
+polygon = PackedVector2Array(-80, -40, 80, -40, 90, 20, -90, 20)
+
+[node name="Cabin" type="Polygon2D" parent="ExplorationVehicle"]
+position = Vector2(-10, -30)
+color = Color(0.9, 0.93, 0.97, 1)
+polygon = PackedVector2Array(-28, -18, 28, -18, 28, 16, -28, 16)
+
+[node name="Antenna" type="Polygon2D" parent="ExplorationVehicle"]
+position = Vector2(55, -45)
+color = Color(0.68, 0.82, 0.86, 1)
+polygon = PackedVector2Array(-2, 0, 2, 0, 2, -32, -2, -32)
+
+[node name="PanelStripe" type="Polygon2D" parent="ExplorationVehicle"]
+position = Vector2(0, -3)
+color = Color(0.91, 0.52, 0.22, 1)
+polygon = PackedVector2Array(-74, 0, 74, 0, 70, 8, -70, 8)
+
+[node name="SupplyCache" type="Node2D" parent="."]
+position = Vector2(1060, 650)
+
+[node name="ContactShadow" type="Polygon2D" parent="SupplyCache"]
+position = Vector2(0, 28)
+color = Color(0.08, 0.035, 0.03, 0.5)
+polygon = PackedVector2Array(-50, -6, -35, -13, 35, -13, 50, -6, 42, 5, -42, 5)
+
+[node name="Body" type="Polygon2D" parent="SupplyCache"]
+color = Color(0.36, 0.25, 0.16, 1)
+polygon = PackedVector2Array(-34, -4, 34, -4, 34, 28, -34, 28)
+
+[node name="Lid" type="Polygon2D" parent="SupplyCache"]
+color = Color(0.58, 0.39, 0.22, 1)
+polygon = PackedVector2Array(-38, -20, 38, -20, 34, -4, -34, -4)
+
+[node name="WarningBand" type="Polygon2D" parent="SupplyCache"]
+position = Vector2(0, -5)
+color = Color(0.93, 0.58, 0.20, 1)
+polygon = PackedVector2Array(-32, -2, 32, -2, 32, 4, -32, 4)
+
+[node name="Latch" type="Polygon2D" parent="SupplyCache"]
+position = Vector2(0, 7)
+color = Color(0.73, 0.81, 0.82, 1)
+polygon = PackedVector2Array(-5, -7, 5, -7, 5, 6, -5, 6)
+
+[node name="StatusLight" type="Polygon2D" parent="SupplyCache"]
+position = Vector2(24, 9)
+color = Color(0.31, 0.91, 0.67, 1)
+polygon = PackedVector2Array(0, -3, 3, 0, 0, 3, -3, 0)
+
+[node name="Label" type="Label" parent="SupplyCache"]
+offset_left = -70.0
+offset_top = 34.0
+offset_right = 70.0
+offset_bottom = 58.0
+text = "SUPRIMENTOS [E]"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.91, 0.93, 0.88, 1)
+theme_override_colors/font_outline_color = Color(0.08, 0.12, 0.14, 1)
+theme_override_constants/outline_size = 3
+
+[node name="ExpeditionMarker" type="Node2D" parent="."]
+position = Vector2(1510, 950)
+
+[node name="ContactShadow" type="Polygon2D" parent="ExpeditionMarker"]
+position = Vector2(0, 32)
+color = Color(0.08, 0.035, 0.03, 0.45)
+polygon = PackedVector2Array(-40, -5, -28, -12, 28, -12, 40, -5, 32, 5, -32, 5)
+
+[node name="Marker" type="Polygon2D" parent="ExpeditionMarker"]
+color = Color(0.92, 0.77, 0.34, 1)
+polygon = PackedVector2Array(0, -30, 26, 0, 0, 30, -26, 0)
+
+[node name="Label" type="Label" parent="ExpeditionMarker"]
+offset_left = -80.0
+offset_top = 34.0
+offset_right = 80.0
+offset_bottom = 58.0
+text = "LOCAL DE IMPACTO"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.95, 0.85, 0.58, 1)
+theme_override_colors/font_outline_color = Color(0.08, 0.12, 0.14, 1)
+theme_override_constants/outline_size = 3
+
+[node name="Astronaut" parent="." instance=ExtResource("1_0c7a1")]
+position = Vector2(980, 650)
+
+[node name="PetCompanion" parent="." instance=ExtResource("pet_scene")]
+position = Vector2(946, 670)
+
+[node name="RoverExplorer" parent="." instance=ExtResource("rover_scene")]
+position = Vector2(930, 900)
+
+[node name="HUD" parent="." instance=ExtResource("hud_scene")]
