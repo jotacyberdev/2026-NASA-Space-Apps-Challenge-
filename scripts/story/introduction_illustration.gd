@@ -15,7 +15,7 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	if size.x < 8.0 or size.y < 8.0:
 		return
-	draw_rect(Rect2(Vector2.ZERO, size), Color("#101D2B"), true)
+	draw_rect(Rect2(Vector2.ZERO, size), Color("#140A06"), true)
 	_draw_stars(42 if slide_index == 0 else 20)
 	match slide_index:
 		0:
@@ -26,7 +26,9 @@ func _draw() -> void:
 			_draw_storm_scene()
 		3:
 			_draw_dawn_scene()
-	draw_rect(Rect2(Vector2.ZERO, size), Color(0.62, 0.79, 0.86, 0.42), false, 1.0)
+	draw_rect(Rect2(Vector2.ZERO, size), Color("#E86A17"), false, 2.0)
+	draw_line(Vector2(8, 8), Vector2(42, 8), Color("#FF9E2C"), 2.0, true)
+	draw_line(Vector2(size.x - 42, size.y - 8), Vector2(size.x - 8, size.y - 8), Color("#FF9E2C"), 2.0, true)
 
 func _draw_stars(count: int) -> void:
 	for index in range(count):
@@ -38,16 +40,16 @@ func _draw_stars(count: int) -> void:
 		draw_circle(Vector2(size.x * x_ratio, size.y * y_ratio), star_size, Color(0.76, 0.88, 0.94, flicker))
 
 func _draw_orbit_scene() -> void:
-	_draw_sky_glow(Color("#182842"), Color("#374B61"), 0.83)
+	_draw_sky_glow(Color("#140A06"), Color("#3A1A12"), 0.83)
 	var orbit_center := Vector2(size.x * 0.58, size.y * 0.53)
 	var orbit := _ellipse_points(orbit_center, Vector2(size.x * 0.33, size.y * 0.27), 90)
-	draw_polyline(orbit, Color(0.66, 0.81, 0.88, 0.42), 1.3, true)
+	draw_polyline(orbit, Color(0.91, 0.42, 0.12, 0.42), 1.3, true)
 	_draw_mars(Vector2(size.x * 0.70, size.y * 0.48), minf(size.x * 0.17, size.y * 0.31))
 	_draw_station(Vector2(size.x * 0.31, size.y * 0.47), 1.0)
-	draw_line(Vector2(size.x * 0.25, size.y * 0.70), Vector2(size.x * 0.58, size.y * 0.70), Color(0.48, 0.77, 0.86, 0.42), 1.0, true)
+	draw_line(Vector2(size.x * 0.25, size.y * 0.70), Vector2(size.x * 0.58, size.y * 0.70), Color(0.91, 0.42, 0.12, 0.42), 1.0, true)
 
 func _draw_entry_scene() -> void:
-	_draw_sky_glow(Color("#13213A"), Color("#A54E35"), 0.75)
+	_draw_sky_glow(Color("#140A06"), Color("#A54E35"), 0.75)
 	_draw_mars_horizon(0.76, Color("#612D2B"), Color("#351C23"))
 	var atmosphere := sin(animation_time * 1.6) * 2.0
 	var capsule_center := Vector2(size.x * 0.54, size.y * 0.48 + atmosphere)
@@ -81,7 +83,7 @@ func _draw_storm_scene() -> void:
 		draw_circle(dust_pos, 2.0 + fposmod(dust_seed, 3.0), Color(0.91, 0.49, 0.30, 0.22))
 
 func _draw_dawn_scene() -> void:
-	_draw_sky_glow(Color("#273A57"), Color("#D77A49"), 0.62)
+	_draw_sky_glow(Color("#1A0C08"), Color("#D77A49"), 0.62)
 	_draw_mars_horizon(0.70, Color("#68312D"), Color("#2C191E"))
 	var ground_line := size.y * 0.78
 	draw_colored_polygon(PackedVector2Array([
@@ -115,16 +117,16 @@ func _draw_mars(center: Vector2, radius: float) -> void:
 
 func _draw_station(center: Vector2, scale: float) -> void:
 	var core := Rect2(center - Vector2(13, 5) * scale, Vector2(26, 10) * scale)
-	draw_rect(core, Color("#C8D6D9"), true)
-	draw_rect(core, Color("#547482"), false, 1.2)
-	draw_rect(Rect2(center + Vector2(-43, -8) * scale, Vector2(26, 16) * scale), Color("#214B64"), true)
-	draw_rect(Rect2(center + Vector2(17, -8) * scale, Vector2(26, 16) * scale), Color("#214B64"), true)
+	draw_rect(core, Color("#F4EEE6"), true)
+	draw_rect(core, Color("#8D3B1B"), false, 1.2)
+	draw_rect(Rect2(center + Vector2(-43, -8) * scale, Vector2(26, 16) * scale), Color("#4A2618"), true)
+	draw_rect(Rect2(center + Vector2(17, -8) * scale, Vector2(26, 16) * scale), Color("#4A2618"), true)
 	for offset in [-43.0, 17.0]:
 		for cell in range(1, 4):
-			draw_line(center + Vector2(offset + cell * 6.5, -8) * scale, center + Vector2(offset + cell * 6.5, 8) * scale, Color("#72C9D7", 0.62), 0.8, true)
-			draw_line(center + Vector2(offset, -8 + cell * 4.0) * scale, center + Vector2(offset + 26, -8 + cell * 4.0) * scale, Color("#72C9D7", 0.54), 0.8, true)
-	draw_line(center + Vector2(-17, 0) * scale, center + Vector2(-43, 0) * scale, Color("#CED9D8"), 2.0, true)
-	draw_line(center + Vector2(13, 0) * scale, center + Vector2(17, 0) * scale, Color("#CED9D8"), 2.0, true)
+			draw_line(center + Vector2(offset + cell * 6.5, -8) * scale, center + Vector2(offset + cell * 6.5, 8) * scale, Color("#E86A17", 0.62), 0.8, true)
+			draw_line(center + Vector2(offset, -8 + cell * 4.0) * scale, center + Vector2(offset + 26, -8 + cell * 4.0) * scale, Color("#E86A17", 0.54), 0.8, true)
+	draw_line(center + Vector2(-17, 0) * scale, center + Vector2(-43, 0) * scale, Color("#F4EEE6"), 2.0, true)
+	draw_line(center + Vector2(13, 0) * scale, center + Vector2(17, 0) * scale, Color("#F4EEE6"), 2.0, true)
 
 func _draw_mars_horizon(horizon_ratio: float, far_color: Color, near_color: Color) -> void:
 	var horizon := size.y * horizon_ratio

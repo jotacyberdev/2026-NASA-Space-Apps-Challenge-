@@ -10,7 +10,7 @@ script = ExtResource("1_rts0q")
 anchors_preset = 0
 offset_left = 18
 offset_top = 18
-offset_right = 400
+offset_right = 440
 offset_bottom = 230
 
 [node name="MarginContainer" type="MarginContainer" parent="TopLeftPanel"]
@@ -49,15 +49,22 @@ layout_mode = 2
 [node name="HealthLabel" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/HealthRow"]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
-text = "Vida"
+text = "VIDA"
 
 [node name="HealthBar" type="ProgressBar" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/HealthRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(160, 14)
 layout_mode = 2
+size_flags_horizontal = 3
 show_percentage = false
 max_value = 100.0
 value = 100.0
+
+[node name="HealthValue" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/HealthRow"]
+custom_minimum_size = Vector2(46, 0)
+layout_mode = 2
+text = "100/100"
+horizontal_alignment = 2
 
 [node name="OxygenRow" type="HBoxContainer" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer"]
 layout_mode = 2
@@ -65,15 +72,22 @@ layout_mode = 2
 [node name="OxygenLabel" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/OxygenRow"]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
-text = "Oxigênio"
+text = "ESCUDO"
 
 [node name="OxygenBar" type="ProgressBar" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/OxygenRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(160, 14)
 layout_mode = 2
+size_flags_horizontal = 3
 show_percentage = false
 max_value = 100.0
 value = 100.0
+
+[node name="OxygenValue" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/OxygenRow"]
+custom_minimum_size = Vector2(46, 0)
+layout_mode = 2
+text = "100/100"
+horizontal_alignment = 2
 
 [node name="EnergyRow" type="HBoxContainer" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer"]
 layout_mode = 2
@@ -81,15 +95,22 @@ layout_mode = 2
 [node name="EnergyLabel" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/EnergyRow"]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
-text = "Energia"
+text = "ENERGIA"
 
 [node name="EnergyBar" type="ProgressBar" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/EnergyRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(160, 14)
 layout_mode = 2
+size_flags_horizontal = 3
 show_percentage = false
 max_value = 100.0
 value = 100.0
+
+[node name="EnergyValue" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/EnergyRow"]
+custom_minimum_size = Vector2(46, 0)
+layout_mode = 2
+text = "100/100"
+horizontal_alignment = 2
 
 [node name="HungerRow" type="HBoxContainer" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer"]
 layout_mode = 2
@@ -97,15 +118,22 @@ layout_mode = 2
 [node name="HungerLabel" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/HungerRow"]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
-text = "Fome"
+text = "FOME"
 
 [node name="HungerBar" type="ProgressBar" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/HungerRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(160, 14)
 layout_mode = 2
+size_flags_horizontal = 3
 show_percentage = false
 max_value = 100.0
 value = 100.0
+
+[node name="HungerValue" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/HungerRow"]
+custom_minimum_size = Vector2(46, 0)
+layout_mode = 2
+text = "100/100"
+horizontal_alignment = 2
 
 [node name="WaterRow" type="HBoxContainer" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer"]
 layout_mode = 2
@@ -113,22 +141,29 @@ layout_mode = 2
 [node name="WaterLabel" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/WaterRow"]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
-text = "Água"
+text = "HIDRATAÇÃO"
 
 [node name="WaterBar" type="ProgressBar" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/WaterRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(160, 14)
 layout_mode = 2
+size_flags_horizontal = 3
 show_percentage = false
 max_value = 100.0
 value = 100.0
+
+[node name="WaterValue" type="Label" parent="TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/WaterRow"]
+custom_minimum_size = Vector2(46, 0)
+layout_mode = 2
+text = "100/100"
+horizontal_alignment = 2
 
 [node name="ObjectivePanel" type="PanelContainer" parent="."]
 anchors_preset = 0
 offset_left = 22
 offset_top = 236
 offset_right = 440
-offset_bottom = 310
+offset_bottom = 430
 
 [node name="MarginContainer" type="MarginContainer" parent="ObjectivePanel"]
 layout_mode = 2
@@ -137,10 +172,24 @@ theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
-[node name="ObjectiveLabel" type="Label" parent="ObjectivePanel/MarginContainer"]
+[node name="TutorialContent" type="VBoxContainer" parent="ObjectivePanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="TutorialTitle" type="Label" parent="ObjectivePanel/MarginContainer/TutorialContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1, 0.62, 0.2, 1)
+text = "TUTORIAL - DIA 1"
+
+[node name="ObjectiveLabel" type="Label" parent="ObjectivePanel/MarginContainer/TutorialContent"]
 layout_mode = 2
 text = "Objetivo do tutorial: acordar e preparar o acampamento."
 autowrap_mode = 3
+
+[node name="TutorialChecklist" type="VBoxContainer" parent="ObjectivePanel/MarginContainer/TutorialContent"]
+layout_mode = 2
+theme_override_constants/separation = 1
 
 [node name="TopRightPanel" type="PanelContainer" parent="."]
 anchors_preset = 1
@@ -149,7 +198,7 @@ anchor_right = 1.0
 offset_left = -194
 offset_top = 18
 offset_right = -18
-offset_bottom = 96
+offset_bottom = 132
 
 [node name="MarginContainer" type="MarginContainer" parent="TopRightPanel"]
 layout_mode = 2
@@ -179,15 +228,21 @@ text = "SOL 1"
 
 [node name="DayLabel" type="Label" parent="TopRightPanel/MarginContainer/ClockContent"]
 layout_mode = 2
-text = "DIA 1"
+text = "DIA 1  -  SOL 1"
+
+[node name="ResourceLabel" type="Label" parent="TopRightPanel/MarginContainer/ClockContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.94, 0.67, 0.37, 1)
+text = "METAL 00   POLÍMERO 00   SEMENTES 00"
 
 [node name="BottomLeftPanel" type="PanelContainer" parent="."]
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 18
-offset_top = -246
-offset_right = 224
+offset_top = -104
+offset_right = 255
 offset_bottom = -18
 
 [node name="MarginContainer" type="MarginContainer" parent="BottomLeftPanel"]
@@ -197,28 +252,37 @@ theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
-[node name="Buttons" type="VBoxContainer" parent="BottomLeftPanel/MarginContainer"]
+[node name="Buttons" type="HBoxContainer" parent="BottomLeftPanel/MarginContainer"]
 layout_mode = 2
 
 [node name="InventoryButton" type="Button" parent="BottomLeftPanel/MarginContainer/Buttons"]
+custom_minimum_size = Vector2(52, 62)
 layout_mode = 2
-text = "Inventário"
+text = ""
+tooltip_text = "Inventário / Mochila"
 
 [node name="ConstructionButton" type="Button" parent="BottomLeftPanel/MarginContainer/Buttons"]
+custom_minimum_size = Vector2(52, 62)
 layout_mode = 2
-text = "Construção"
+text = ""
+tooltip_text = "Construção"
 
 [node name="MapButton" type="Button" parent="BottomLeftPanel/MarginContainer/Buttons"]
+custom_minimum_size = Vector2(52, 62)
 layout_mode = 2
-text = "Mapa"
+text = ""
+tooltip_text = "Mapa"
 
 [node name="JournalButton" type="Button" parent="BottomLeftPanel/MarginContainer/Buttons"]
 layout_mode = 2
-text = "Diário"
+visible = false
+text = ""
 
 [node name="SettingsButton" type="Button" parent="BottomLeftPanel/MarginContainer/Buttons"]
+custom_minimum_size = Vector2(52, 62)
 layout_mode = 2
-text = "Configurações"
+text = ""
+tooltip_text = "Configurações"
 
 [node name="QuickBar" type="PanelContainer" parent="."]
 anchors_preset = 7
@@ -227,7 +291,7 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -374
-offset_top = -114
+offset_top = -100
 offset_right = 374
 offset_bottom = -8
 
@@ -267,3 +331,11 @@ text = "5 - Batata"
 [node name="Slot6" type="Button" parent="QuickBar/MarginContainer/HBoxContainer"]
 layout_mode = 2
 text = "6 - Água"
+
+[node name="Slot7" type="Button" parent="QuickBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "7 - Peças"
+
+[node name="Slot8" type="Button" parent="QuickBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "8 - Vazio"

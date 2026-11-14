@@ -12,15 +12,25 @@ signal construction_preview_changed(structure_id: String)
 @onready var energy_bar: ProgressBar = %EnergyBar
 @onready var hunger_bar: ProgressBar = %HungerBar
 @onready var water_bar: ProgressBar = %WaterBar
-@onready var objective_label: Label = $ObjectivePanel/MarginContainer/ObjectiveLabel
+@onready var objective_label: Label = $ObjectivePanel/MarginContainer/TutorialContent/ObjectiveLabel
+@onready var tutorial_checklist: VBoxContainer = $ObjectivePanel/MarginContainer/TutorialContent/TutorialChecklist
 @onready var day_label: Label = $TopRightPanel/MarginContainer/ClockContent/DayLabel
 @onready var time_label: Label = $TopRightPanel/MarginContainer/ClockContent/ClockRow/TimeLabel
 @onready var sol_label: Label = $TopRightPanel/MarginContainer/ClockContent/ClockRow/SolLabel
+@onready var resource_label: Label = $TopRightPanel/MarginContainer/ClockContent/ResourceLabel
+@onready var health_value_label: Label = $TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/HealthRow/HealthValue
+@onready var oxygen_value_label: Label = $TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/OxygenRow/OxygenValue
+@onready var energy_value_label: Label = $TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/EnergyRow/EnergyValue
+@onready var hunger_value_label: Label = $TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/HungerRow/HungerValue
+@onready var water_value_label: Label = $TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/WaterRow/WaterValue
 
 const QUICKBAR_ICON_SCRIPT := preload("res://scripts/ui/quickbar_icon.gd")
 const MARS_RADAR_SCRIPT := preload("res://scripts/ui/mars_radar.gd")
-const QUICKBAR_ITEMS := ["rations", "water_bottle", "medkit", "metal", "polymer", "seeds"]
-const QUICKBAR_LABELS := ["Ração", "Água", "Kit médico", "Metal", "Polímero", "Sementes"]
+const WARM_THEME := preload("res://scripts/ui/warm_sci_fi_theme.gd")
+const ACTION_ICON_SCRIPT := preload("res://scripts/ui/hud_action_icon.gd")
+const QUICKBAR_ITEMS := ["rations", "water_bottle", "medkit", "metal", "polymer", "seeds", "spare_parts", ""]
+const QUICKBAR_LABELS := ["Ração", "Água", "Kit médico", "Metal", "Polímero", "Sementes", "Peças", ""]
+const TUTORIAL_LABELS := ["Recuperar suprimentos", "Construir o Habitat", "Montar a Estufa", "Alcançar o Rover", "Explorar o impacto", "Retornar ao acampamento", "Construir a Mineradora"]
 const ITEM_DESCRIPTIONS := {
 	"metal": "Material recuperado para estruturas básicas.",
 	"polymer": "Material leve usado na construção do habitat e da estufa.",
@@ -89,12 +99,18 @@ var modal_backdrop: ColorRect
 var overlay_title: Label
 var overlay_body: Label
 var inventory_section: HBoxContainer
+var inventory_profile: PanelContainer
+var inventory_center: VBoxContainer
 var inventory_grid: GridContainer
 var inventory_detail: PanelContainer
 var inventory_detail_title: Label
 var inventory_detail_description: Label
 var inventory_detail_effect: Label
 var inventory_use_button: Button
+var inventory_discard_button: Button
+var inventory_split_button: Button
+var inventory_move_button: Button
+var inventory_capacity_label: Label
 var choice_scroll: ScrollContainer
 var choice_container: VBoxContainer
 var map_radar: Control
@@ -106,6 +122,7 @@ var inventory_count_labels: Array[Label] = []
 var inventory_icon_controls: Array[Control] = []
 var quickbar_item_labels: Array[Label] = []
 var quickbar_count_labels: Array[Label] = []
+var tutorial_checkboxes: Array[CheckBox] = []
 var selected_inventory_slot := -1
 
 func _ready() -> void:
@@ -116,6 +133,8 @@ func _ready() -> void:
 	assert(is_instance_valid(water_bar), "HUD: Scene Unique Node '%WaterBar' não foi encontrado.")
 	_apply_hud_theme()
 	_setup_quickbar()
+	_setup_action_buttons()
+	_setup_tutorial_checklist()
 	_add_vignette()
 	GameManager.state_changed.connect(update_hud)
 	$BottomLeftPanel/MarginContainer/Buttons/InventoryButton.pressed.connect(open_inventory)
@@ -124,7 +143,7 @@ func _ready() -> void:
 	$BottomLeftPanel/MarginContainer/Buttons/JournalButton.pressed.connect(open_journal)
 	$BottomLeftPanel/MarginContainer/Buttons/SettingsButton.pressed.connect(open_settings)
 	_build_overlay()
-	for index in range(6):
+	for index in range(QUICKBAR_ITEMS.size()):
 		var quickbar_button: Button = get_node("QuickBar/MarginContainer/HBoxContainer/Slot%d" % (index + 1))
 		quickbar_button.pressed.connect(_on_quickbar_pressed.bind(index))
 	update_hud()
@@ -138,26 +157,30 @@ func _apply_hud_theme() -> void:
 		panel.add_theme_stylebox_override("panel", panel_style.duplicate())
 	for node in find_children("*", "Button", true, false):
 		_style_button(node as Button)
-	_style_progress_bar(health_bar, Color("#E63946"))
-	_style_progress_bar(oxygen_bar, Color("#00B4D8"))
-	_style_progress_bar(energy_bar, Color("#FFB703"))
-	_style_progress_bar(hunger_bar, Color("#FB8500"))
-	_style_progress_bar(water_bar, Color("#3A86FF"))
+	_style_progress_bar(health_bar, Color("#D84A38"))
+	_style_progress_bar(oxygen_bar, Color("#72C7DF"))
+	_style_progress_bar(energy_bar, Color("#F4C34E"))
+	_style_progress_bar(hunger_bar, Color("#8FC66E"))
+	_style_progress_bar(water_bar, Color("#37BFD0"))
 	for stat_name in ["Health", "Oxygen", "Energy", "Hunger", "Water"]:
 		var stat_label := get_node("TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer/%sRow/%sLabel" % [stat_name, stat_name]) as Label
 		stat_label.custom_minimum_size.x = 80
 	name_label.add_theme_font_size_override("font_size", 17)
-	name_label.add_theme_color_override("font_color", Color("#F3F7FA"))
+	name_label.add_theme_color_override("font_color", WARM_THEME.TEXT)
 	crew_label.add_theme_font_size_override("font_size", 9)
-	crew_label.add_theme_color_override("font_color", Color("#70D8E8"))
-	objective_label.add_theme_color_override("font_color", Color("#E6EDF3"))
-	day_label.add_theme_color_override("font_color", Color("#70D8E8"))
+	crew_label.add_theme_color_override("font_color", WARM_THEME.AMBER)
+	objective_label.add_theme_color_override("font_color", WARM_THEME.TEXT)
+	day_label.add_theme_color_override("font_color", WARM_THEME.AMBER)
 	day_label.add_theme_font_size_override("font_size", 9)
 	day_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	time_label.add_theme_font_size_override("font_size", 24)
-	time_label.add_theme_color_override("font_color", Color("#F3F7FA"))
+	time_label.add_theme_color_override("font_color", WARM_THEME.TEXT)
 	sol_label.add_theme_font_size_override("font_size", 11)
-	sol_label.add_theme_color_override("font_color", Color("#FFB703"))
+	sol_label.add_theme_color_override("font_color", WARM_THEME.AMBER)
+	resource_label.add_theme_color_override("font_color", WARM_THEME.TEXT_MUTED)
+	for value_label in [health_value_label, oxygen_value_label, energy_value_label, hunger_value_label, water_value_label]:
+		value_label.add_theme_font_size_override("font_size", 9)
+		value_label.add_theme_color_override("font_color", WARM_THEME.TEXT)
 	time_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	sol_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	$TopRightPanel/MarginContainer/ClockContent.add_theme_constant_override("separation", 1)
@@ -170,21 +193,12 @@ func _apply_hud_theme() -> void:
 	$TopLeftPanel/MarginContainer/HBoxContainer/InfoContainer/StatsContainer.add_theme_constant_override("separation", 3)
 
 func _make_panel_style() -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.06, 0.08, 0.12, 0.82)
-	style.border_color = Color(0.25, 0.55, 0.85, 0.45)
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(5)
-	style.set_content_margin_all(10)
-	style.shadow_color = Color(0.0, 0.0, 0.0, 0.3)
-	style.shadow_size = 7
-	style.shadow_offset = Vector2(0, 3)
-	return style
+	return WARM_THEME.panel_style()
 
 func _make_prompt_style() -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.035, 0.075, 0.095, 0.9)
-	style.border_color = Color(0.20, 0.72, 0.82, 0.78)
+	style.bg_color = Color(0.11, 0.06, 0.04, 0.95)
+	style.border_color = Color("#E86A17")
 	style.set_border_width_all(1)
 	style.border_width_left = 3
 	style.set_corner_radius_all(5)
@@ -192,40 +206,21 @@ func _make_prompt_style() -> StyleBoxFlat:
 	return style
 
 func _style_button(button: Button) -> void:
-	var normal := StyleBoxFlat.new()
-	normal.bg_color = Color(0.08, 0.13, 0.18, 0.94)
-	normal.border_color = Color(0.24, 0.48, 0.63, 0.7)
-	var hover := StyleBoxFlat.new()
-	hover.bg_color = Color(0.12, 0.23, 0.29, 0.98)
-	hover.border_color = Color(0.30, 0.78, 0.89, 0.95)
-	var pressed := StyleBoxFlat.new()
-	pressed.bg_color = Color(0.05, 0.18, 0.23, 1.0)
-	pressed.border_color = Color(0.18, 0.78, 0.86, 1.0)
-	for style in [normal, hover, pressed]:
-		style.set_border_width_all(1)
-		style.set_corner_radius_all(4)
-		style.set_content_margin_all(5)
-	button.add_theme_stylebox_override("normal", normal)
-	button.add_theme_stylebox_override("hover", hover)
-	button.add_theme_stylebox_override("pressed", pressed)
-	button.add_theme_color_override("font_color", Color("#EAF2F7"))
-	button.add_theme_color_override("font_hover_color", Color.WHITE)
-	button.add_theme_color_override("font_pressed_color", Color("#70D8E8"))
-	button.add_theme_color_override("font_disabled_color", Color(0.55, 0.61, 0.66, 0.65))
+	WARM_THEME.apply_button(button, false, true)
 
 func _style_inventory_slot(button: Button, selected: bool) -> void:
 	var normal := StyleBoxFlat.new()
-	normal.bg_color = Color(0.065, 0.105, 0.14, 0.94)
-	normal.border_color = Color(0.24, 0.43, 0.52, 0.62)
+	normal.bg_color = Color(0.12, 0.07, 0.045, 0.96)
+	normal.border_color = Color(0.58, 0.31, 0.15, 0.68)
 	var hover := StyleBoxFlat.new()
-	hover.bg_color = Color(0.09, 0.17, 0.21, 0.98)
-	hover.border_color = Color(0.32, 0.77, 0.86, 0.92)
+	hover.bg_color = Color(0.24, 0.11, 0.052, 0.98)
+	hover.border_color = Color("#FF9E2C")
 	var pressed := StyleBoxFlat.new()
-	pressed.bg_color = Color(0.07, 0.20, 0.23, 1.0)
-	pressed.border_color = Color(0.26, 0.82, 0.88, 1.0)
+	pressed.bg_color = Color("#8D3812")
+	pressed.border_color = Color("#E86A17")
 	var selected_style := StyleBoxFlat.new()
-	selected_style.bg_color = Color(0.08, 0.18, 0.22, 1.0)
-	selected_style.border_color = Color(0.35, 0.83, 0.89, 1.0)
+	selected_style.bg_color = Color(0.30, 0.13, 0.055, 1.0)
+	selected_style.border_color = Color("#FF9E2C")
 	for style in [normal, hover, pressed, selected_style]:
 		style.set_border_width_all(1)
 		style.set_corner_radius_all(5)
@@ -236,16 +231,16 @@ func _style_inventory_slot(button: Button, selected: bool) -> void:
 
 func _style_choice_card(button: Button) -> void:
 	var normal := StyleBoxFlat.new()
-	normal.bg_color = Color(0.065, 0.10, 0.14, 0.95)
-	normal.border_color = Color(0.20, 0.43, 0.56, 0.68)
+	normal.bg_color = Color(0.12, 0.07, 0.045, 0.96)
+	normal.border_color = Color(0.58, 0.31, 0.15, 0.72)
 	normal.border_width_left = 3
 	var hover := StyleBoxFlat.new()
-	hover.bg_color = Color(0.085, 0.15, 0.19, 0.99)
-	hover.border_color = Color(0.27, 0.72, 0.82, 0.96)
+	hover.bg_color = Color(0.24, 0.11, 0.052, 0.99)
+	hover.border_color = Color("#FF9E2C")
 	hover.border_width_left = 3
 	var disabled := StyleBoxFlat.new()
-	disabled.bg_color = Color(0.055, 0.075, 0.09, 0.82)
-	disabled.border_color = Color(0.25, 0.31, 0.34, 0.55)
+	disabled.bg_color = Color(0.09, 0.06, 0.045, 0.86)
+	disabled.border_color = Color(0.38, 0.28, 0.20, 0.58)
 	disabled.border_width_left = 3
 	for style in [normal, hover, disabled]:
 		style.set_border_width_all(1)
@@ -255,11 +250,11 @@ func _style_choice_card(button: Button) -> void:
 	button.add_theme_stylebox_override("normal", normal)
 	button.add_theme_stylebox_override("hover", hover)
 	button.add_theme_stylebox_override("disabled", disabled)
-	button.add_theme_color_override("font_disabled_color", Color("#9AAAB0"))
+	button.add_theme_color_override("font_disabled_color", WARM_THEME.TEXT_MUTED)
 
 func _style_progress_bar(bar: ProgressBar, fill_color: Color) -> void:
 	var background := StyleBoxFlat.new()
-	background.bg_color = Color(0.015, 0.03, 0.045, 0.96)
+	background.bg_color = Color(0.07, 0.04, 0.027, 0.96)
 	background.set_corner_radius_all(3)
 	var fill := StyleBoxFlat.new()
 	fill.bg_color = fill_color
@@ -269,10 +264,10 @@ func _style_progress_bar(bar: ProgressBar, fill_color: Color) -> void:
 	bar.add_theme_color_override("font_color", Color.WHITE)
 
 func _setup_quickbar() -> void:
-	for index in range(6):
+	for index in range(QUICKBAR_ITEMS.size()):
 		var button := get_node("QuickBar/MarginContainer/HBoxContainer/Slot%d" % (index + 1)) as Button
 		button.text = ""
-		button.custom_minimum_size = Vector2(108, 76)
+		button.custom_minimum_size = Vector2(82, 74)
 		var margin := MarginContainer.new()
 		margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -287,21 +282,13 @@ func _setup_quickbar() -> void:
 		var key_badge_panel := PanelContainer.new()
 		key_badge_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		key_badge_panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		var badge_style := StyleBoxFlat.new()
-		badge_style.bg_color = Color(0.035, 0.13, 0.17, 1.0)
-		badge_style.border_color = Color(0.22, 0.62, 0.71, 0.78)
-		badge_style.set_border_width_all(1)
-		badge_style.set_corner_radius_all(3)
-		badge_style.content_margin_left = 5
-		badge_style.content_margin_right = 5
-		badge_style.content_margin_top = 1
-		badge_style.content_margin_bottom = 1
+		var badge_style := WARM_THEME.badge_style()
 		key_badge_panel.add_theme_stylebox_override("panel", badge_style)
 		var key_badge := Label.new()
 		key_badge.text = "[%d]" % (index + 1)
 		key_badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		key_badge.add_theme_font_size_override("font_size", 9)
-		key_badge.add_theme_color_override("font_color", Color("#70D8E8"))
+		key_badge.add_theme_color_override("font_color", WARM_THEME.AMBER_LIGHT)
 		key_badge_panel.add_child(key_badge)
 		content.add_child(key_badge_panel)
 		var icon_frame := CenterContainer.new()
@@ -330,6 +317,71 @@ func _setup_quickbar() -> void:
 		quickbar_item_labels.append(item_label)
 		quickbar_count_labels.append(count_label)
 
+func _setup_action_buttons() -> void:
+	var actions := [
+		{"node": "ConstructionButton", "id": "construction", "tooltip": "Construção"},
+		{"node": "InventoryButton", "id": "inventory", "tooltip": "Inventário / Mochila"},
+		{"node": "MapButton", "id": "map", "tooltip": "Mapa"},
+		{"node": "SettingsButton", "id": "settings", "tooltip": "Configurações"}
+	]
+	var button_row := $BottomLeftPanel/MarginContainer/Buttons as Container
+	button_row.add_theme_constant_override("separation", 4)
+	for action in actions:
+		var button := get_node("BottomLeftPanel/MarginContainer/Buttons/%s" % action["node"]) as Button
+		button.text = ""
+		button.tooltip_text = str(action["tooltip"])
+		button.custom_minimum_size = Vector2(46, 60)
+		_style_button(button)
+		var icon := Control.new()
+		icon.set_script(ACTION_ICON_SCRIPT)
+		icon.set("action_id", action["id"])
+		icon.custom_minimum_size = Vector2(28, 28)
+		icon.set_anchors_preset(Control.PRESET_CENTER)
+		icon.offset_left = -14
+		icon.offset_top = -14
+		icon.offset_right = 14
+		icon.offset_bottom = 14
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		button.add_child(icon)
+	var journal_button := $BottomLeftPanel/MarginContainer/Buttons/JournalButton as Button
+	journal_button.hide()
+	journal_button.tooltip_text = "Diário científico (tecla J)"
+
+func _setup_tutorial_checklist() -> void:
+	for child in tutorial_checklist.get_children():
+		child.queue_free()
+	tutorial_checkboxes.clear()
+	for objective in TUTORIAL_LABELS:
+		var check := CheckBox.new()
+		check.text = objective
+		check.disabled = true
+		check.focus_mode = Control.FOCUS_NONE
+		check.add_theme_color_override("font_color", WARM_THEME.TEXT_MUTED)
+		check.add_theme_color_override("font_pressed_color", WARM_THEME.SUCCESS)
+		check.add_theme_font_size_override("font_size", 11)
+		tutorial_checklist.add_child(check)
+		tutorial_checkboxes.append(check)
+	_update_tutorial_checklist()
+
+func _update_tutorial_checklist() -> void:
+	for index in range(tutorial_checkboxes.size()):
+		var completed := GameManager.tutorial_step > index
+		tutorial_checkboxes[index].button_pressed = completed
+		tutorial_checkboxes[index].add_theme_color_override("font_color", WARM_THEME.SUCCESS if completed else WARM_THEME.TEXT_MUTED)
+
+func _on_modal_tab_pressed(tab_id: String) -> void:
+	match tab_id:
+		"inventory":
+			open_inventory()
+		"crafting":
+			open_crafting()
+		"construction":
+			open_construction()
+		"missions":
+			open_missions()
+		"journal":
+			open_journal()
+
 func _add_vignette() -> void:
 	var vignette := ColorRect.new()
 	vignette.name = "AtmosphereVignette"
@@ -344,7 +396,7 @@ func _add_vignette() -> void:
 func _build_overlay() -> void:
 	modal_backdrop = ColorRect.new()
 	modal_backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
-	modal_backdrop.color = Color(0.02, 0.025, 0.03, 0.55)
+	modal_backdrop.color = Color(0.04, 0.02, 0.01, 0.72)
 	modal_backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
 	modal_backdrop.z_index = 19
 	modal_backdrop.hide()
@@ -358,10 +410,8 @@ func _build_overlay() -> void:
 	overlay.z_index = 20
 	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	var modal_style := StyleBoxFlat.new()
-	modal_style.bg_color = Color(0.05, 0.07, 0.11, 0.94)
-	modal_style.border_color = Color(0.25, 0.55, 0.85, 0.6)
-	modal_style.set_border_width_all(1)
-	modal_style.set_corner_radius_all(8)
+	modal_style = WARM_THEME.panel_style(0.96)
+	modal_style.set_corner_radius_all(5)
 	modal_style.set_content_margin_all(20)
 	modal_style.shadow_color = Color(0.0, 0.0, 0.0, 0.48)
 	modal_style.shadow_size = 14
@@ -377,7 +427,7 @@ func _build_overlay() -> void:
 	content.add_child(header)
 	overlay_title = Label.new()
 	overlay_title.add_theme_font_size_override("font_size", 24)
-	overlay_title.add_theme_color_override("font_color", Color("#EAF4F6"))
+	overlay_title.add_theme_color_override("font_color", WARM_THEME.TEXT)
 	overlay_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(overlay_title)
 	var close_button := Button.new()
@@ -396,12 +446,31 @@ func _build_overlay() -> void:
 	header.add_child(close_button)
 	var divider := ColorRect.new()
 	divider.custom_minimum_size.y = 1
-	divider.color = Color(0.25, 0.55, 0.85, 0.42)
+	divider.color = Color(0.91, 0.42, 0.12, 0.60)
 	divider.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	content.add_child(divider)
+	var tabs_bar := HBoxContainer.new()
+	tabs_bar.add_theme_constant_override("separation", 6)
+	content.add_child(tabs_bar)
+	var modal_tabs := [
+		{"id": "inventory", "text": "▣  INVENTÁRIO"},
+		{"id": "crafting", "text": "⚒  FABRICAÇÃO"},
+		{"id": "construction", "text": "⌂  CONSTRUÇÃO"},
+		{"id": "missions", "text": "◎  MISSÕES"},
+		{"id": "journal", "text": "▤  DIÁRIO"}
+	]
+	for tab in modal_tabs:
+		var tab_button := Button.new()
+		tab_button.text = tab["text"]
+		tab_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		tab_button.custom_minimum_size.y = 36
+		_style_button(tab_button)
+		tab_button.add_theme_font_size_override("font_size", 10)
+		tab_button.pressed.connect(_on_modal_tab_pressed.bind(str(tab["id"])))
+		tabs_bar.add_child(tab_button)
 	overlay_body = Label.new()
 	overlay_body.add_theme_font_size_override("font_size", 13)
-	overlay_body.add_theme_color_override("font_color", Color("#AFC4CE"))
+	overlay_body.add_theme_color_override("font_color", WARM_THEME.TEXT_MUTED)
 	overlay_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	overlay_body.hide()
 	content.add_child(overlay_body)
@@ -410,15 +479,66 @@ func _build_overlay() -> void:
 	inventory_section.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	inventory_section.hide()
 	content.add_child(inventory_section)
+	inventory_profile = PanelContainer.new()
+	inventory_profile.custom_minimum_size.x = 150
+	inventory_profile.add_theme_stylebox_override("panel", _make_panel_style())
+	inventory_section.add_child(inventory_profile)
+	var profile_content := VBoxContainer.new()
+	profile_content.name = "ProfileContent"
+	profile_content.add_theme_constant_override("separation", 8)
+	inventory_profile.add_child(profile_content)
+	var profile_title := Label.new()
+	profile_title.text = "TRIPULAÇÃO"
+	profile_title.add_theme_color_override("font_color", WARM_THEME.AMBER)
+	profile_title.add_theme_font_size_override("font_size", 12)
+	profile_content.add_child(profile_title)
+	var profile_portrait := Control.new()
+	profile_portrait.set_script(preload("res://scripts/ui/astronaut_portrait.gd"))
+	profile_portrait.custom_minimum_size = Vector2(76, 76)
+	profile_portrait.set("gender", GameManager.gender)
+	profile_content.add_child(profile_portrait)
+	var profile_name := Label.new()
+	profile_name.name = "InventoryProfileName"
+	profile_name.text = GameManager.player_name
+	profile_name.add_theme_color_override("font_color", WARM_THEME.TEXT)
+	profile_content.add_child(profile_name)
+	var pet_name := "LAIKA" if GameManager.pet == "dog" else "HAM"
+	var profile_pet := Label.new()
+	profile_pet.text = "MASCOTE  |  " + pet_name
+	profile_pet.add_theme_color_override("font_color", WARM_THEME.TEXT_MUTED)
+	profile_pet.add_theme_font_size_override("font_size", 10)
+	profile_content.add_child(profile_pet)
+	inventory_capacity_label = Label.new()
+	inventory_capacity_label.add_theme_color_override("font_color", WARM_THEME.AMBER)
+	profile_content.add_child(inventory_capacity_label)
+	var inventory_center := VBoxContainer.new()
+	inventory_center.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	inventory_center.add_theme_constant_override("separation", 8)
+	inventory_section.add_child(inventory_center)
 	inventory_grid = GridContainer.new()
 	inventory_grid.columns = 6
-	inventory_grid.custom_minimum_size = Vector2(600, 400)
+	inventory_grid.custom_minimum_size = Vector2(570, 360)
 	inventory_grid.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	inventory_grid.add_theme_constant_override("h_separation", 8)
 	inventory_grid.add_theme_constant_override("v_separation", 8)
-	inventory_section.add_child(inventory_grid)
+	inventory_center.add_child(inventory_grid)
+	var quick_craft_title := Label.new()
+	quick_craft_title.text = "FABRICAÇÃO RÁPIDA  /  CONSUMÍVEIS"
+	quick_craft_title.add_theme_color_override("font_color", WARM_THEME.AMBER)
+	quick_craft_title.add_theme_font_size_override("font_size", 11)
+	inventory_center.add_child(quick_craft_title)
+	var quick_craft_row := HBoxContainer.new()
+	quick_craft_row.add_theme_constant_override("separation", 6)
+	inventory_center.add_child(quick_craft_row)
+	for quick_item in ["rations", "water_bottle", "medkit"]:
+		var quick_button := Button.new()
+		quick_button.text = "USAR  " + str(GameManager.ITEM_NAMES[quick_item]).to_upper()
+		quick_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_style_button(quick_button)
+		quick_button.pressed.connect(_use_inventory_item.bind(quick_item))
+		quick_craft_row.add_child(quick_button)
 	inventory_detail = PanelContainer.new()
-	inventory_detail.custom_minimum_size.x = 270
+	inventory_detail.custom_minimum_size.x = 250
 	inventory_detail.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	inventory_detail.add_theme_stylebox_override("panel", _make_panel_style())
 	inventory_section.add_child(inventory_detail)
@@ -447,6 +567,29 @@ func _build_overlay() -> void:
 	_style_button(inventory_use_button)
 	inventory_use_button.pressed.connect(_on_inventory_use_pressed)
 	detail_content.add_child(inventory_use_button)
+	var detail_actions := HBoxContainer.new()
+	detail_actions.add_theme_constant_override("separation", 4)
+	detail_content.add_child(detail_actions)
+	inventory_discard_button = Button.new()
+	inventory_discard_button.text = "DESCARTAR"
+	inventory_discard_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_style_button(inventory_discard_button)
+	inventory_discard_button.pressed.connect(_on_inventory_discard_pressed)
+	detail_actions.add_child(inventory_discard_button)
+	inventory_split_button = Button.new()
+	inventory_split_button.text = "SEPARAR"
+	inventory_split_button.disabled = true
+	inventory_split_button.tooltip_text = "Separação de pilhas indisponível nesta versão."
+	inventory_split_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_style_button(inventory_split_button)
+	detail_actions.add_child(inventory_split_button)
+	inventory_move_button = Button.new()
+	inventory_move_button.text = "MOVER"
+	inventory_move_button.disabled = true
+	inventory_move_button.tooltip_text = "Arraste os itens na mochila para reorganizar."
+	inventory_move_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_style_button(inventory_move_button)
+	detail_actions.add_child(inventory_move_button)
 	choice_scroll = ScrollContainer.new()
 	choice_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	choice_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -695,17 +838,24 @@ func _update_inventory_view() -> void:
 		selected_inventory_slot = _find_first_occupied_inventory_slot()
 	if selected_inventory_slot >= 0 and str(GameManager.inventory[selected_inventory_slot].get("id", "")) == "":
 		selected_inventory_slot = _find_first_occupied_inventory_slot()
+	var occupied_slots := 0
 	for slot_index in range(inventory_buttons.size()):
 		var slot: Dictionary = GameManager.inventory[slot_index]
 		var item_id := str(slot.get("id", ""))
 		var count := int(slot.get("count", 0))
+		if not item_id.is_empty():
+			occupied_slots += 1
 		var item_label := inventory_item_labels[slot_index]
 		item_label.text = GameManager.ITEM_NAMES.get(item_id, "Espaço vazio") if item_id != "" else "Vazio"
 		inventory_count_labels[slot_index].text = "x%d" % count if item_id != "" else ""
 		inventory_buttons[slot_index].disabled = item_id.is_empty()
 		inventory_buttons[slot_index].tooltip_text = GameManager.ITEM_NAMES.get(item_id, "Espaço vazio") if item_id != "" else "Espaço vazio"
-		inventory_icon_controls[slot_index].set("item_id", item_id if item_id != "" else "rations")
+		inventory_icon_controls[slot_index].set("item_id", item_id)
 		_style_inventory_slot(inventory_buttons[slot_index], slot_index == selected_inventory_slot)
+	inventory_capacity_label.text = "%d/%d ESPAÇOS" % [occupied_slots, GameManager.INVENTORY_CAPACITY]
+	var profile_name := inventory_profile.get_node_or_null("ProfileContent/InventoryProfileName") as Label
+	if profile_name != null:
+		profile_name.text = GameManager.player_name
 	_render_inventory_detail()
 
 func _find_first_occupied_inventory_slot() -> int:
@@ -726,6 +876,7 @@ func _render_inventory_detail() -> void:
 		inventory_detail_description.text = "Recupere suprimentos para preencher a mochila."
 		inventory_detail_effect.text = ""
 		inventory_use_button.hide()
+		inventory_discard_button.disabled = true
 		return
 	var slot: Dictionary = GameManager.inventory[selected_inventory_slot]
 	var item_id := str(slot.get("id", ""))
@@ -734,12 +885,14 @@ func _render_inventory_detail() -> void:
 		inventory_detail_description.text = "Este compartimento está livre."
 		inventory_detail_effect.text = ""
 		inventory_use_button.hide()
+		inventory_discard_button.disabled = true
 		return
 	inventory_detail_title.text = GameManager.ITEM_NAMES.get(item_id, item_id).to_upper()
 	inventory_detail_description.text = ITEM_DESCRIPTIONS.get(item_id, "Recurso recuperado durante a missão.")
 	inventory_detail_effect.text = ITEM_EFFECTS.get(item_id, "RECURSO")
 	var consumable := item_id in ["rations", "water_bottle", "medkit"]
 	inventory_use_button.visible = consumable
+	inventory_discard_button.disabled = int(slot.get("count", 0)) <= 0
 	if consumable:
 		var target_stat := str({"rations": "hunger", "water_bottle": "water", "medkit": "health"}[item_id])
 		inventory_use_button.disabled = int(slot.get("count", 0)) <= 0 or float(GameManager.stats.get(target_stat, 100.0)) >= 100.0
@@ -752,6 +905,13 @@ func _on_inventory_use_pressed() -> void:
 		_update_inventory_view()
 	else:
 		inventory_detail_effect.text = "SEM EFEITO  |  O atributo correspondente já está cheio."
+
+func _on_inventory_discard_pressed() -> void:
+	if selected_inventory_slot < 0:
+		return
+	var item_id := str(GameManager.inventory[selected_inventory_slot].get("id", ""))
+	if not item_id.is_empty() and GameManager.remove_item(item_id, 1):
+		_update_inventory_view()
 
 func open_construction() -> void:
 	var structures := {
@@ -773,6 +933,24 @@ func open_construction() -> void:
 			"preview": structure_id
 		})
 	show_choices("Construção", "SELECIONE UM MÓDULO  |  Custos em estoque / necessários. A montagem respeita a etapa atual da missão.", choices)
+
+func open_crafting() -> void:
+	show_choices("Fabricação rápida", "CONSUMÍVEIS  |  Use itens disponíveis pela hotbar; novas receitas poderão ser conectadas ao inventário.", [
+		{"title": "Ração de emergência", "description": "Recupera fome. Use uma unidade já armazenada.", "enabled": false},
+		{"title": "Água purificada", "description": "Recupera hidratação. Use uma unidade já armazenada.", "enabled": false},
+		{"title": "Kit médico", "description": "Recupera vida. Use uma unidade já armazenada.", "enabled": false}
+	])
+
+func open_missions() -> void:
+	var mission_cards: Array[Dictionary] = []
+	for index in range(GameManager.OBJECTIVES.size() - 1):
+		var status := "CONCLUÍDA" if index < GameManager.tutorial_step else "ATUAL" if index == GameManager.tutorial_step else "BLOQUEADA"
+		mission_cards.append({
+			"title": "%s  /  %s" % [status, "DIA 1"],
+			"description": str(GameManager.OBJECTIVES[index]),
+			"enabled": false
+		})
+	show_choices("Missões", "PROTOCOLO DE SOBREVIVÊNCIA  |  Progresso da missão inicial.", mission_cards)
 
 func _build_structure(structure_id: String) -> void:
 	if GameManager.build_structure(structure_id):
@@ -848,6 +1026,11 @@ func _on_quickbar_pressed(index: int) -> void:
 	if is_modal_open() or index < 0 or index >= QUICKBAR_ITEMS.size():
 		return
 	var item_id: String = QUICKBAR_ITEMS[index]
+	if item_id.is_empty():
+		return
+	_use_inventory_item(item_id)
+
+func _use_inventory_item(item_id: String) -> void:
 	if item_id in ["rations", "water_bottle", "medkit"]:
 		if GameManager.consume_item(item_id):
 			_show_notice("Item usado", "%s aplicado." % GameManager.ITEM_NAMES[item_id])
@@ -876,8 +1059,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			open_construction()
 		KEY_M:
 			open_map()
+		KEY_J:
+			open_journal()
 		_:
-			if not is_modal_open() and event.keycode >= KEY_1 and event.keycode <= KEY_6:
+			if not is_modal_open() and event.keycode >= KEY_1 and event.keycode <= KEY_8:
 				_on_quickbar_pressed(event.keycode - KEY_1)
 
 func update_hud() -> void:
@@ -895,15 +1080,21 @@ func update_hud() -> void:
 	energy_bar.value = GameManager.clamp_stat(float(stats.get("energy", 100.0)))
 	hunger_bar.value = GameManager.clamp_stat(float(stats.get("hunger", 100.0)))
 	water_bar.value = GameManager.clamp_stat(float(stats.get("water", 100.0)))
+	for pair in [[health_bar, health_value_label], [oxygen_bar, oxygen_value_label], [energy_bar, energy_value_label], [hunger_bar, hunger_value_label], [water_bar, water_value_label]]:
+		var stat_bar: ProgressBar = pair[0]
+		var value_label: Label = pair[1]
+		value_label.text = "%d/%d" % [roundi(stat_bar.value), roundi(stat_bar.max_value)]
 	objective_label.text = GameManager.current_objective
-	day_label.text = "DIA %d" % GameManager.day
+	day_label.text = "DIA %d  -  SOL %d" % [GameManager.day, GameManager.sol]
 	time_label.text = GameManager.current_time
 	sol_label.text = "SOL %d" % GameManager.sol
+	resource_label.text = "METAL %02d   POLÍMERO %02d   SEMENTES %02d" % [GameManager.get_item_count("metal"), GameManager.get_item_count("polymer"), GameManager.get_item_count("seeds")]
 	for index in range(QUICKBAR_ITEMS.size()):
 		var item_id: String = QUICKBAR_ITEMS[index]
 		var quickbar_button: Button = get_node("QuickBar/MarginContainer/HBoxContainer/Slot%d" % (index + 1))
 		quickbar_item_labels[index].text = QUICKBAR_LABELS[index]
-		quickbar_item_labels[index].tooltip_text = GameManager.ITEM_NAMES[item_id]
-		quickbar_count_labels[index].text = "x%d" % GameManager.get_item_count(item_id)
+		quickbar_item_labels[index].tooltip_text = str(GameManager.ITEM_NAMES.get(item_id, ""))
+		quickbar_count_labels[index].text = "x%d" % GameManager.get_item_count(item_id) if not item_id.is_empty() else ""
 		quickbar_button.disabled = GameManager.get_item_count(item_id) == 0
 	_update_inventory_view()
+	_update_tutorial_checklist()

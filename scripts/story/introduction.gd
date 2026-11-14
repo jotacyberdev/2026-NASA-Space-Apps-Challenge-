@@ -18,6 +18,8 @@ const PAGES: Array = [
 		"text": "A astronauta desperta ferida, mas viva. O tutorial do dia 1 começa com a recuperação do acampamento e a sobrevivência inicial."
 	}
 ]
+const PROGRESS_DOTS := ["●  ○  ○  ○", "○  ●  ○  ○", "○  ○  ●  ○", "○  ○  ○  ●"]
+const WARM_THEME := preload("res://scripts/ui/warm_sci_fi_theme.gd")
 
 @onready var title_label: Label = $Background/Panel/Margin/Content/TitleLabel
 @onready var body_label: Label = $Background/Panel/Margin/Content/BodyLabel
@@ -29,38 +31,41 @@ const PAGES: Array = [
 var current_page := 0
 
 func _ready() -> void:
-	_style_story_button(continue_button, true)
-	_style_story_button(skip_button, false)
-	page_label.add_theme_color_override("font_color", Color("#75D4DF"))
+	$Background/Panel.add_theme_stylebox_override("panel", WARM_THEME.panel_style(0.96))
+	WARM_THEME.apply_button(continue_button, true)
+	WARM_THEME.apply_button(skip_button, false, true)
+	title_label.add_theme_color_override("font_color", WARM_THEME.AMBER)
+	body_label.add_theme_color_override("font_color", WARM_THEME.TEXT)
+	page_label.add_theme_color_override("font_color", WARM_THEME.AMBER)
 	current_page = 0
 	update_page()
 
 func update_page() -> void:
 	var page = PAGES[current_page]
-	title_label.text = page["title"]
+	title_label.text = page["title"].to_upper()
 	body_label.text = page["text"]
 	illustration.call("set_slide", current_page)
-	page_label.text = str(current_page + 1) + "/" + str(PAGES.size())
-	continue_button.text = "Continuar" if current_page < PAGES.size() - 1 else "Iniciar Dia 1"
+	page_label.text = PROGRESS_DOTS[current_page]
+	continue_button.text = "CONTINUAR" if current_page < PAGES.size() - 1 else "INICIAR DIA 1"
 
 func _style_story_button(button: Button, is_primary: bool) -> void:
 	var normal := StyleBoxFlat.new()
 	var hover := StyleBoxFlat.new()
 	var pressed := StyleBoxFlat.new()
 	if is_primary:
-		normal.bg_color = Color("#B9572B")
-		normal.border_color = Color("#F3A24D")
-		hover.bg_color = Color("#E37339")
-		hover.border_color = Color("#FFD18A")
-		pressed.bg_color = Color("#93401F")
-		pressed.border_color = Color("#E78945")
+		normal.bg_color = Color("#D95B16")
+		normal.border_color = Color("#FF9E2C")
+		hover.bg_color = Color("#FF8C24")
+		hover.border_color = Color("#FFD27B")
+		pressed.bg_color = Color("#A84110")
+		pressed.border_color = Color("#E86A17")
 	else:
-		normal.bg_color = Color(0.04, 0.075, 0.11, 0.78)
-		normal.border_color = Color(0.31, 0.47, 0.55, 0.58)
-		hover.bg_color = Color(0.08, 0.15, 0.19, 0.96)
-		hover.border_color = Color(0.38, 0.71, 0.77, 0.86)
-		pressed.bg_color = Color(0.035, 0.10, 0.14, 1.0)
-		pressed.border_color = Color(0.25, 0.58, 0.65, 0.94)
+		normal.bg_color = Color(0.105, 0.058, 0.04, 0.84)
+		normal.border_color = Color(0.55, 0.31, 0.15, 0.75)
+		hover.bg_color = Color(0.21, 0.10, 0.052, 0.96)
+		hover.border_color = Color("#FF9E2C")
+		pressed.bg_color = Color(0.12, 0.052, 0.03, 1.0)
+		pressed.border_color = Color("#E86A17")
 	for style in [normal, hover, pressed]:
 		style.set_border_width_all(1)
 		style.set_corner_radius_all(5)

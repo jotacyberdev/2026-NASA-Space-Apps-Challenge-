@@ -172,3 +172,11 @@ Data: 2026-11-14
 
 - Abrir `project.godot` no Godot 4.7.2, aguardar a importação e pressionar F5 para iniciar pelo menu.
 - Para exportar: criar um preset **Windows Desktop** em **Project > Export**, garantir os templates correspondentes à versão do editor e exportar o executável. Esta sessão não gerou um `.exe`.
+
+
+## Atualização da Identidade Visual e Telas (Novembro 2026)
+
+- **Identidade Visual Quente:** Aplicada a paleta marrom-terroso e laranja-âmbar (`WarmSciFiTheme`) ao HUD, barras de atalho, atalhos rápidos, títulos, descrições, modais (Inventário, Fabricação, Construção, Missões, Diário) e ao Radar/Mapa marciano.
+- **Tela de Criação de Personagem:** Refatorados estilos dos botões de seleção, campo de texto (LineEdit) e painéis para a identidade visual aquecida.
+- **Tela de Introdução:** Ilustrações vetoriais, céu, estação e elementos ajustados para paleta quente e cinemática alinhada ao tema do jogo.
+- **Polimento e Estabilidade:** Verificadas todas as referências de nós e chamadas de método nos scripts `mars_base.gd`, `mars_radar.gd`, `hud.gd` e `character_creation.gd`, garantindo ausência de referências nulas no Godot 4.x.

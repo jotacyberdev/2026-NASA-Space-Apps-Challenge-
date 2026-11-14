@@ -1,5 +1,8 @@
 extends Control
 
+const WARM_THEME := preload("res://scripts/ui/warm_sci_fi_theme.gd")
+const MENU_ICON_SCRIPT := preload("res://scripts/ui/menu_action_icon.gd")
+
 @onready var new_game_button: Button = $CenterContainer/VBoxContainer/NewGameButton
 @onready var load_game_button: Button = $CenterContainer/VBoxContainer/LoadGameButton
 @onready var settings_button: Button = $CenterContainer/VBoxContainer/SettingsButton
@@ -14,11 +17,11 @@ var fullscreen_toggle: CheckButton
 
 func _ready() -> void:
     $CenterContainer/VBoxContainer.add_theme_constant_override("separation", 10)
-    _style_menu_button(new_game_button, true)
-    _style_menu_button(load_game_button)
-    _style_menu_button(settings_button)
-    _style_menu_button(credits_button)
-    _style_menu_button(exit_button)
+    _style_menu_button(new_game_button, "start", true)
+    _style_menu_button(load_game_button, "load")
+    _style_menu_button(settings_button, "settings")
+    _style_menu_button(credits_button, "credits")
+    _style_menu_button(exit_button, "exit")
     load_game_button.disabled = not GameManager.save_exists()
     if load_game_button.disabled:
         load_game_button.tooltip_text = "Nenhuma partida salva."
@@ -46,8 +49,8 @@ func _build_settings_dialog() -> void:
     settings_dialog.title = "Configurações"
     settings_dialog.size = Vector2i(420, 220)
     var dialog_style := StyleBoxFlat.new()
-    dialog_style.bg_color = Color(0.045, 0.075, 0.105, 0.98)
-    dialog_style.border_color = Color(0.25, 0.62, 0.76, 0.72)
+    dialog_style.bg_color = Color(0.11, 0.06, 0.04, 0.96)
+    dialog_style.border_color = Color("#E86A17")
     dialog_style.set_border_width_all(1)
     dialog_style.set_corner_radius_all(7)
     dialog_style.set_content_margin_all(18)
@@ -80,32 +83,21 @@ func _build_settings_dialog() -> void:
     fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
     content.add_child(fullscreen_toggle)
 
-func _style_menu_button(button: Button, is_primary: bool = false) -> void:
-    var normal := StyleBoxFlat.new()
-    normal.bg_color = Color("#B9572B") if is_primary else Color(0.035, 0.085, 0.12, 0.88)
-    normal.border_color = Color("#F3A24D") if is_primary else Color(0.22, 0.57, 0.69, 0.82)
-    var hover := StyleBoxFlat.new()
-    hover.bg_color = Color("#E37339") if is_primary else Color(0.07, 0.17, 0.22, 0.98)
-    hover.border_color = Color("#FFD18A") if is_primary else Color("#5CD5E2")
-    var pressed := StyleBoxFlat.new()
-    pressed.bg_color = Color("#93401F") if is_primary else Color(0.035, 0.12, 0.16, 1.0)
-    pressed.border_color = Color("#E78945") if is_primary else Color("#2B9FB5")
-    var disabled := StyleBoxFlat.new()
-    disabled.bg_color = Color(0.11, 0.14, 0.16, 0.78)
-    disabled.border_color = Color(0.29, 0.36, 0.39, 0.58)
-    for style in [normal, hover, pressed, disabled]:
-        style.set_border_width_all(1)
-        style.set_corner_radius_all(5)
-        style.set_content_margin_all(8)
-    button.add_theme_stylebox_override("normal", normal)
-    button.add_theme_stylebox_override("hover", hover)
-    button.add_theme_stylebox_override("pressed", pressed)
-    button.add_theme_stylebox_override("disabled", disabled)
-    button.add_theme_color_override("font_color", Color("#FFF3E3") if is_primary else Color("#E6F3F5"))
-    button.add_theme_color_override("font_hover_color", Color.WHITE)
-    button.add_theme_color_override("font_pressed_color", Color("#FFE0B6"))
-    button.add_theme_color_override("font_disabled_color", Color(0.57, 0.65, 0.68, 0.75))
-    button.add_theme_font_size_override("font_size", 15)
+func _style_menu_button(button: Button, action_id: String, is_primary: bool = false) -> void:
+    WARM_THEME.apply_button(button, is_primary)
+    button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+    button.text = "     " + button.text
+    var icon := Control.new()
+    icon.set_script(MENU_ICON_SCRIPT)
+    icon.set("action_id", action_id)
+    icon.custom_minimum_size = Vector2(30, 30)
+    icon.set_anchors_preset(Control.PRESET_CENTER_LEFT)
+    icon.offset_left = 12
+    icon.offset_top = -15
+    icon.offset_right = 42
+    icon.offset_bottom = 15
+    icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    button.add_child(icon)
 
 func _is_fullscreen_mode() -> bool:
     var window_mode := DisplayServer.window_get_mode()
