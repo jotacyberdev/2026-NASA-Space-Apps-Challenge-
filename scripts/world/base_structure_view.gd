@@ -1,6 +1,19 @@
 extends Node2D
 
+const WARM_THEME := preload("res://scripts/ui/warm_sci_fi_theme.gd")
 const ASSET_REGISTRY := preload("res://scripts/core/asset_registry.gd")
+
+# Distinct building sprite paths per structure ID
+const BUILDING_SPRITE_PATHS := {
+	"habitat": "res://assets/sprites/buildings/habitat_lvl1.png",
+	"workshop": "res://assets/sprites/buildings/workshop_lvl1.png",
+	"warehouse": "res://assets/sprites/buildings/warehouse_lvl1.png",
+	"greenhouse": "res://assets/sprites/buildings/greenhouse_lvl1.png",
+	"solar_panel": "res://assets/sprites/buildings/solar_panel_lvl1.png",
+	"comm_antenna": "res://assets/sprites/buildings/comm_antenna_lvl1.png",
+	"laboratory": "res://assets/sprites/buildings/laboratory_lvl1.png",
+	"pet_shelter": "res://assets/sprites/buildings/pet_shelter_lvl1.png",
+}
 
 var structure_id := "habitat"
 var structure_size := Vector2(150, 100)
@@ -27,14 +40,17 @@ func set_state(built: bool, selected: bool) -> void:
 
 func _update_sprite() -> void:
 	if is_built and _sprite == null:
-		var texture := ASSET_REGISTRY.building_texture(structure_id)
-		if texture != null:
+		var tex_path = BUILDING_SPRITE_PATHS[structure_id]
+		var tex := WARM_THEME.load_texture(tex_path) if tex_path != null else null
+		if tex == null:
+			tex = ASSET_REGISTRY.building_texture(structure_id)
+		if tex != null:
 			_sprite = Sprite2D.new()
 			_sprite.name = "BuildingSprite"
-			_sprite.texture = texture
+			_sprite.texture = tex
 			_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 			_sprite.centered = true
-			var fit_scale := minf(structure_size.x / float(texture.get_width()), structure_size.y / float(texture.get_height()))
+			var fit_scale := minf(structure_size.x / float(tex.get_width()), structure_size.y / float(tex.get_height()))
 			_sprite.scale = Vector2.ONE * fit_scale
 			add_child(_sprite)
 	if _sprite != null:

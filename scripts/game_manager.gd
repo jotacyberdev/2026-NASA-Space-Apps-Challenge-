@@ -57,6 +57,7 @@ var structures: Dictionary = {"habitat": false, "greenhouse": false, "miner": fa
 var inventory: Array = []
 var player_position := Vector2(980, 650)
 var diary_read: Array = []
+var collected_resources: Array = []
 
 var stats: Dictionary = {
 	"health": 100.0,
@@ -165,7 +166,7 @@ func remove_item(item_id: String, amount: int = 1) -> bool:
 	return true
 
 func collect_initial_cache() -> bool:
-	if tutorial_step != 0 or cache_opened:
+	if tutorial_step != 0:
 		return false
 	var supplies := {"metal": 10, "polymer": 4, "seeds": 2, "rations": 3, "water_bottle": 3, "medkit": 1}
 	if not add_items(supplies, false):
@@ -176,6 +177,9 @@ func collect_initial_cache() -> bool:
 	state_changed.emit()
 	save_game()
 	return true
+
+func is_cache_available() -> bool:
+	return tutorial_step == 0
 
 func can_build(structure_id: String) -> bool:
 	if not BUILD_RECIPES.has(structure_id) or structures.get(structure_id, false):
@@ -230,6 +234,34 @@ func return_to_camp() -> bool:
 		return false
 	_set_tutorial_step(6)
 	return true
+
+func collect_resource(node_id: String) -> bool:
+	if node_id in collected_resources:
+		return false
+	var node_data = {
+		"metal_scrap_1": {"item": "metal", "amount": 5},
+		"metal_scrap_2": {"item": "metal", "amount": 5},
+		"polymer_crystal_1": {"item": "polymer", "amount": 3},
+		"polymer_crystal_2": {"item": "polymer", "amount": 3},
+		"mineral_deposit_1": {"item": "metal", "amount": 8},
+		"mineral_deposit_2": {"item": "metal", "amount": 8},
+	}
+	if not node_data.has(node_id):
+		return false
+	var data = node_data[node_id]
+	var item_id := str(data["item"])
+	var amount := int(data["amount"])
+	if not add_items({item_id: amount}):
+		return false
+	collected_resources.append(node_id)
+	state_changed.emit()
+	save_game()
+	return true
+
+func restore_at_habitat() -> void:
+	stats["oxygen"] = 100.0
+	stats["energy"] = 100.0
+	state_changed.emit()
 
 func consume_item(item_id: String) -> bool:
 	var effects := {"rations": {"hunger": 30.0}, "water_bottle": {"water": 30.0}, "medkit": {"health": 25.0}}
@@ -286,7 +318,8 @@ func save_game() -> bool:
 		"inventory": inventory,
 		"stats": stats,
 		"player_position": [player_position.x, player_position.y],
-		"diary_read": diary_read
+		"diary_read": diary_read,
+		"collected_resources": collected_resources
 	}
 	if not _is_valid_save_data(save_data):
 		push_error("O estado atual da partida não passou pela validação de salvamento.")
@@ -363,6 +396,7 @@ func load_game() -> bool:
 	inventory = data["inventory"]
 	player_position = data["player_position"]
 	diary_read = data["diary_read"]
+	collected_resources = data["collected_resources"]
 	state_changed.emit()
 	return true
 
@@ -380,7 +414,7 @@ func _read_valid_save(path: String) -> Dictionary:
 	return _normalize_save_data(parsed)
 
 func _is_valid_save_data(data: Dictionary) -> bool:
-	var required_keys := ["version", "player_name", "gender", "pet", "difficulty", "intro_skipped", "current_objective", "day", "sol", "current_time", "tutorial_step", "cache_opened", "expedition_reward_claimed", "structures", "inventory", "stats", "player_position", "diary_read"]
+	var required_keys := ["version", "player_name", "gender", "pet", "difficulty", "intro_skipped", "current_objective", "day", "sol", "current_time", "tutorial_step", "cache_opened", "expedition_reward_claimed", "structures", "inventory", "stats", "player_position", "diary_read", "collected_resources"]
 	for key in required_keys:
 		if not data.has(key):
 			return false
@@ -514,6 +548,7 @@ func reset_defaults() -> void:
 	player_position = Vector2(980, 650)
 	diary_read.clear()
 	_reset_inventory()
+	collected_resources.clear()
 	stats = {
 		"health": 100.0,
 		"oxygen": 100.0,

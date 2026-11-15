@@ -212,9 +212,18 @@ color = Color(0.68, 0.76, 0.92, 0.28)
 polygon = PackedVector2Array(-20, -80, 20, -80, 20, 80, -20, 80)
 visible = false
 
-[node name="DamagedShip" type="Node2D" parent="."]
+[node name="DamagedShip" type="StaticBody2D" parent="."]
 position = Vector2(1750, 900)
 script = ExtResource("capsule_script")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamagedShip"]
+shape = SubResource("CircleShape2D_rock")
+
+[node name="HabitatDoor" type="Area2D" parent="."]
+position = Vector2(520, 540)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HabitatDoor"]
+shape = SubResource("CircleShape2D_rock")
 
 [node name="ExplorationVehicle" type="Node2D" parent="."]
 position = Vector2(930, 900)
@@ -318,6 +327,128 @@ horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.95, 0.85, 0.58, 1)
 theme_override_colors/font_outline_color = Color(0.08, 0.12, 0.14, 1)
 theme_override_constants/outline_size = 3
+
+[node name="ResourceNodes" type="Node2D" parent="."]
+
+[node name="MetalScrap1" type="Area2D" parent="ResourceNodes"]
+position = Vector2(400, 400)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ResourceNodes/MetalScrap1"]
+shape = SubResource("CircleShape2D_rock")
+
+[node name="Visual" type="Polygon2D" parent="ResourceNodes/MetalScrap1"]
+color = Color(0.72, 0.60, 0.52, 1)
+polygon = PackedVector2Array(-20, -15, 20, -10, 25, 15, -15, 20)
+
+[node name="Label" type="Label" parent="ResourceNodes/MetalScrap1"]
+offset_left = -40.0
+offset_top = 25.0
+offset_right = 40.0
+offset_bottom = 45.0
+text = "SUCATA METÁLICA [E]"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.91, 0.85, 0.78, 1)
+theme_override_constants/font_size = 12
+
+[node name="MetalScrap2" type="Area2D" parent="ResourceNodes"]
+position = Vector2(1600, 450)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ResourceNodes/MetalScrap2"]
+shape = SubResource("CircleShape2D_rock")
+
+[node name="Visual" type="Polygon2D" parent="ResourceNodes/MetalScrap2"]
+color = Color(0.72, 0.60, 0.52, 1)
+polygon = PackedVector2Array(-20, -15, 20, -10, 25, 15, -15, 20)
+
+[node name="Label" type="Label" parent="ResourceNodes/MetalScrap2"]
+offset_left = -40.0
+offset_top = 25.0
+offset_right = 40.0
+offset_bottom = 45.0
+text = "SUCATA METÁLICA [E]"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.91, 0.85, 0.78, 1)
+theme_override_constants/font_size = 12
+
+[node name="PolymerCrystal1" type="Area2D" parent="ResourceNodes"]
+position = Vector2(800, 300)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ResourceNodes/PolymerCrystal1"]
+shape = SubResource("CircleShape2D_rock")
+
+[node name="Visual" type="Polygon2D" parent="ResourceNodes/PolymerCrystal1"]
+color = Color(0.95, 0.75, 0.30, 1)
+polygon = PackedVector2Array(-15, -20, 15, -15, 20, 15, -10, 20)
+
+[node name="Label" type="Label" parent="ResourceNodes/PolymerCrystal1"]
+offset_left = -40.0
+offset_top = 25.0
+offset_right = 40.0
+offset_bottom = 45.0
+text = "CRISTAL DE POLÍMERO [E]"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.98, 0.85, 0.60, 1)
+theme_override_constants/font_size = 12
+
+[node name="PolymerCrystal2" type="Area2D" parent="ResourceNodes"]
+position = Vector2(1400, 700)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ResourceNodes/PolymerCrystal2"]
+shape = SubResource("CircleShape2D_rock")
+
+[node name="Visual" type="Polygon2D" parent="ResourceNodes/PolymerCrystal2"]
+color = Color(0.95, 0.75, 0.30, 1)
+polygon = PackedVector2Array(-15, -20, 15, -15, 20, 15, -10, 20)
+
+[node name="Label" type="Label" parent="ResourceNodes/PolymerCrystal2"]
+offset_left = -40.0
+offset_top = 25.0
+offset_right = 40.0
+offset_bottom = 45.0
+text = "CRISTAL DE POLÍMERO [E]"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.98, 0.85, 0.60, 1)
+theme_override_constants/font_size = 12
+
+[node name="MineralDeposit1" type="Area2D" parent="ResourceNodes"]
+position = Vector2(300, 900)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ResourceNodes/MineralDeposit1"]
+shape = SubResource("CircleShape2D_rock")
+
+[node name="Visual" type="Polygon2D" parent="ResourceNodes/MineralDeposit1"]
+color = Color(0.60, 0.50, 0.40, 1)
+polygon = PackedVector2Array(-25, -18, 25, -12, 28, 18, -22, 22)
+
+[node name="Label" type="Label" parent="ResourceNodes/MineralDeposit1"]
+offset_left = -40.0
+offset_top = 25.0
+offset_right = 40.0
+offset_bottom = 45.0
+text = "DEPÓSITO MINERAL [E]"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.90, 0.80, 0.70, 1)
+theme_override_constants/font_size = 12
+
+[node name="MineralDeposit2" type="Area2D" parent="ResourceNodes"]
+position = Vector2(1700, 600)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ResourceNodes/MineralDeposit2"]
+shape = SubResource("CircleShape2D_rock")
+
+[node name="Visual" type="Polygon2D" parent="ResourceNodes/MineralDeposit2"]
+color = Color(0.60, 0.50, 0.40, 1)
+polygon = PackedVector2Array(-25, -18, 25, -12, 28, 18, -22, 22)
+
+[node name="Label" type="Label" parent="ResourceNodes/MineralDeposit2"]
+offset_left = -40.0
+offset_top = 25.0
+offset_right = 40.0
+offset_bottom = 45.0
+text = "DEPÓSITO MINERAL [E]"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.90, 0.80, 0.70, 1)
+theme_override_constants/font_size = 12
 
 [node name="Astronaut" parent="." instance=ExtResource("1_0c7a1")]
 position = Vector2(980, 650)

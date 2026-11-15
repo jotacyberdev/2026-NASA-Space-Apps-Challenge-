@@ -27,8 +27,6 @@ func _draw() -> void:
 		3:
 			_draw_dawn_scene()
 	draw_rect(Rect2(Vector2.ZERO, size), Color("#E86A17"), false, 2.0)
-	draw_line(Vector2(8, 8), Vector2(42, 8), Color("#FF9E2C"), 2.0, true)
-	draw_line(Vector2(size.x - 42, size.y - 8), Vector2(size.x - 8, size.y - 8), Color("#FF9E2C"), 2.0, true)
 
 func _draw_stars(count: int) -> void:
 	for index in range(count):
@@ -45,18 +43,19 @@ func _draw_orbit_scene() -> void:
 	var orbit := _ellipse_points(orbit_center, Vector2(size.x * 0.33, size.y * 0.27), 90)
 	draw_polyline(orbit, Color(0.91, 0.42, 0.12, 0.42), 1.3, true)
 	_draw_mars(Vector2(size.x * 0.70, size.y * 0.48), minf(size.x * 0.17, size.y * 0.31))
-	_draw_station(Vector2(size.x * 0.31, size.y * 0.47), 1.0)
-	draw_line(Vector2(size.x * 0.25, size.y * 0.70), Vector2(size.x * 0.58, size.y * 0.70), Color(0.91, 0.42, 0.12, 0.42), 1.0, true)
+	# Center the satellite exactly on the orbit line (leftmost point of ellipse)
+	var satellite_pos := orbit_center + Vector2(-size.x * 0.33, 0.0)
+	_draw_station(satellite_pos, 1.0)
 
 func _draw_entry_scene() -> void:
 	_draw_sky_glow(Color("#140A06"), Color("#A54E35"), 0.75)
 	_draw_mars_horizon(0.76, Color("#612D2B"), Color("#351C23"))
 	var atmosphere := sin(animation_time * 1.6) * 2.0
 	var capsule_center := Vector2(size.x * 0.54, size.y * 0.48 + atmosphere)
-	var canopy_center := Vector2(capsule_center.x, size.y * 0.23 + atmosphere * 0.4)
-	_draw_parachute(canopy_center, size.x * 0.15, Color("#D96D42"))
+	var canopy_center := Vector2(capsule_center.x, size.y * 0.23 + atmosphere * 0.4 + size.y * 0.02)
+	_draw_parachute(canopy_center, size.x * 0.10, Color("#D96D42"))
 	for rope_x in [-0.78, -0.40, 0.0, 0.40, 0.78]:
-		draw_line(canopy_center + Vector2(size.x * 0.15 * rope_x, size.y * 0.015), capsule_center + Vector2(size.x * 0.025 * rope_x, -size.y * 0.025), Color(0.88, 0.78, 0.66, 0.68), 1.0, true)
+		draw_line(canopy_center + Vector2(size.x * 0.10 * rope_x, size.y * 0.015), capsule_center + Vector2(size.x * 0.025 * rope_x, -size.y * 0.025), Color(0.88, 0.78, 0.66, 0.68), 1.0, true)
 	_draw_capsule(capsule_center, Vector2(size.x * 0.08, size.y * 0.14), -0.12)
 	draw_colored_polygon(PackedVector2Array([
 		capsule_center + Vector2(-size.x * 0.025, size.y * 0.065),
@@ -66,7 +65,7 @@ func _draw_entry_scene() -> void:
 	]), Color(1.0, 0.45, 0.16, 0.58))
 
 func _draw_storm_scene() -> void:
-	_draw_sky_glow(Color("#453448"), Color("#A34F35"), 0.64)
+	_draw_sky_glow(Color("#140A06"), Color("#A34F35"), 0.64)
 	_draw_mars_horizon(0.70, Color("#6B3430"), Color("#351A20"))
 	for streak in range(18):
 		var streak_seed := float(streak + 3)
@@ -74,9 +73,27 @@ func _draw_storm_scene() -> void:
 		var y := size.y * (0.18 + fposmod(streak_seed * 0.173, 0.60))
 		var length := size.x * (0.025 + fposmod(streak_seed * 0.091, 0.055))
 		draw_line(Vector2(x, y), Vector2(x + length, y - size.y * 0.012), Color(0.95, 0.56, 0.34, 0.14), 2.0, true)
-	var crash_center := Vector2(size.x * 0.56, size.y * 0.72)
-	draw_colored_polygon(_ellipse_points(Vector2(size.x * 0.56, size.y * 0.79), Vector2(size.x * 0.22, size.y * 0.045), 44), Color(0.09, 0.035, 0.03, 0.62))
-	_draw_capsule(crash_center, Vector2(size.x * 0.13, size.y * 0.16), -0.48)
+	var crash_center := Vector2(size.x * 0.50, size.y * 0.70)
+	# Reentry flames beneath the capsule
+	var flame_height := size.y * 0.06 + sin(animation_time * 3.0) * size.y * 0.01
+	draw_colored_polygon(PackedVector2Array([
+		crash_center + Vector2(-size.x * 0.05, size.y * 0.02),
+		crash_center + Vector2(size.x * 0.05, size.y * 0.02),
+		crash_center + Vector2(0.0, size.y * 0.02 + flame_height)
+	]), Color("#E86A17"))
+	draw_colored_polygon(PackedVector2Array([
+		crash_center + Vector2(-size.x * 0.03, size.y * 0.02),
+		crash_center + Vector2(size.x * 0.03, size.y * 0.02),
+		crash_center + Vector2(0.0, size.y * 0.02 + flame_height * 0.6)
+	]), Color("#FF9E2C"))
+	# Landing legs
+	draw_line(crash_center + Vector2(-size.x * 0.08, size.y * 0.08), crash_center + Vector2(-size.x * 0.14, size.y * 0.14), Color("#8D3B1B"), 3.0, true)
+	draw_line(crash_center + Vector2(size.x * 0.08, size.y * 0.08), crash_center + Vector2(size.x * 0.14, size.y * 0.14), Color("#8D3B1B"), 3.0, true)
+	draw_line(crash_center + Vector2(-size.x * 0.14, size.y * 0.14), crash_center + Vector2(-size.x * 0.18, size.y * 0.16), Color("#8D3B1B"), 3.0, true)
+	draw_line(crash_center + Vector2(size.x * 0.14, size.y * 0.14), crash_center + Vector2(size.x * 0.18, size.y * 0.16), Color("#8D3B1B"), 3.0, true)
+	# Capsule with proper proportions
+	_draw_capsule(crash_center, Vector2(size.x * 0.10, size.y * 0.12), -0.25)
+	draw_colored_polygon(_ellipse_points(Vector2(size.x * 0.50, size.y * 0.78), Vector2(size.x * 0.20, size.y * 0.04), 44), Color(0.09, 0.035, 0.03, 0.62))
 	for dust_index in range(9):
 		var dust_seed := float(dust_index + 4)
 		var dust_pos := crash_center + Vector2(fposmod(dust_seed * 0.29, 0.30) * size.x - size.x * 0.15, -fposmod(dust_seed * 0.21, 0.10) * size.y)

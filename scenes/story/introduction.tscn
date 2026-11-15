@@ -55,6 +55,7 @@ horizontal_alignment = 1
 [node name="IllustrationPanel" type="Control" parent="Background/Panel/Margin/Content"]
 custom_minimum_size = Vector2(0, 250)
 layout_mode = 2
+clip_contents = true
 script = ExtResource("2_illustration")
 
 [node name="TitleLabel" type="Label" parent="Background/Panel/Margin/Content"]
@@ -76,7 +77,13 @@ custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 theme_override_font_sizes/font_size = 19
 theme_override_colors/font_color = Color(1, 0.62, 0.2, 1)
-text = "●  ○  ○  ○"
+theme_override_colors/font_outline_color = Color(0.1, 0.04, 0.02, 1)
+theme_override_constants/outline_size = 2
+type = "RichTextLabel"
+text = "○  ○  ○  ○"
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
 horizontal_alignment = 1
 
 [node name="Controls" type="HBoxContainer" parent="Background/Panel/Margin/Content"]

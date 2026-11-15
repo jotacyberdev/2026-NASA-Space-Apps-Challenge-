@@ -7,6 +7,19 @@ const AUTOSAVE_INTERVAL_SECONDS := 15.0
 const INTERACTION_RADIUS := 135.0
 const CAMP_POSITION := Vector2(980, 650)
 const EXPEDITION_POSITION := Vector2(1510, 950)
+const HABITAT_POSITION := Vector2(520, 540)
+
+# Resource node positions (world coordinates)
+const RESOURCE_NODES := [
+	{"id": "metal_scrap_1", "item": "metal", "amount": 5, "position": Vector2(400, 400)},
+	{"id": "metal_scrap_2", "item": "metal", "amount": 5, "position": Vector2(1600, 450)},
+	{"id": "polymer_crystal_1", "item": "polymer", "amount": 3, "position": Vector2(800, 300)},
+	{"id": "polymer_crystal_2", "item": "polymer", "amount": 3, "position": Vector2(1400, 700)},
+	{"id": "mineral_deposit_1", "item": "metal", "amount": 8, "position": Vector2(300, 900)},
+	{"id": "mineral_deposit_2", "item": "metal", "amount": 8, "position": Vector2(1700, 600)},
+]
+
+var collected_resources: Array = []
 
 @onready var survival_timer: Timer = $SurvivalTimer
 var autosave_elapsed := 0.0
@@ -33,6 +46,15 @@ func _ready() -> void:
 	survival_timer.start()
 	_refresh_structures()
 	_update_interaction_prompt()
+
+	# Expand camera limits for larger explorable area
+	var camera = player.get_node_or_null("Camera2D")
+	if camera != null:
+		camera.limit_left = 100
+		camera.limit_right = 1900
+		camera.limit_top = 100
+		camera.limit_bottom = 1100
+		camera.offset = Vector2(0, 0)
 
 func _create_dust_particles() -> void:
 	var particles := GPUParticles2D.new()
@@ -114,10 +136,28 @@ func _get_interaction_target() -> String:
 		5:
 			target_id = "camp"
 			target_position = CAMP_POSITION
+		_:
+			# Cache remains interactable after tutorial for re-inspection
+			if player.global_position.distance_to(Vector2(1060, 650)) <= INTERACTION_RADIUS:
+				return "cache"
 	if target_id != "" and player.global_position.distance_to(target_position) <= INTERACTION_RADIUS:
 		return target_id
 	if player.global_position.distance_to(rover.global_position) <= INTERACTION_RADIUS:
 		return "rover"
+
+	# Habitat door interaction
+	if GameManager.structures.has("habitat") and GameManager.structures["habitat"]:
+		if player.global_position.distance_to(HABITAT_POSITION) <= INTERACTION_RADIUS:
+			return "habitat_door"
+
+	# Resource node collection
+	for node in RESOURCE_NODES:
+		var node_id := str(node["id"])
+		if node_id in collected_resources:
+			continue
+		if player.global_position.distance_to(Vector2(node["position"])) <= INTERACTION_RADIUS:
+			return "resource_" + node_id
+
 	return ""
 
 func _update_interaction_prompt() -> void:
@@ -135,6 +175,10 @@ func _update_interaction_prompt() -> void:
 		prompt = "E | Retornar ao acampamento"
 	elif target_id == "rover":
 		rover.set_prompt_active(true)
+	elif target_id == "habitat_door":
+		prompt = "E | Entrar no Habitat"
+	elif target_id.begins_with("resource_"):
+		prompt = "E | Coletar recurso"
 	elif GameManager.tutorial_step == 5:
 		prompt = "Retorne à zona central do acampamento"
 	if target_id != "rover":

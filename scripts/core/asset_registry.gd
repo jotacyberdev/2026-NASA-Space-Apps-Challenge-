@@ -3,15 +3,20 @@ extends RefCounted
 
 const SPRITE_SHEET_BUILDER := preload("res://scripts/core/sprite_sheet_builder.gd")
 
+# Character texture paths - individual direction sprites
 const CHARACTER_SPRITES := {
-	"astronaut_female": "res://assets/sprites/characters/astronaut_female_sheet.png",
-	"astronaut_male": "res://assets/sprites/characters/astronaut_male_sheet.png",
-	"pet_laika": "res://assets/sprites/characters/pet_laika_sheet.png",
-	"pet_ham": "res://assets/sprites/characters/pet_ham_sheet.png"
+	"astronaut_female": "res://assets/sprites/characters/sofia/Frente.png",
+	"astronaut_male": "res://assets/sprites/characters/male/Frente.png",
+	"pet_laika": "res://assets/sprites/characters/laika/Parado.png",
+	"pet_ham": "res://assets/sprites/characters/ham/Parado.png"
 }
+
+# Vehicle texture paths
 const VEHICLE_SPRITES := {
-	"rover_explorer": "res://assets/sprites/vehicles/rover_explorer_sheet.png"
+	"rover_explorer": "res://assets/sprites/vehicles/rover/Parado.png"
 }
+
+# Building texture paths
 const BUILDING_SPRITES := {
 	"habitat": "res://assets/sprites/buildings/habitat_lvl1.png",
 	"workshop": "res://assets/sprites/buildings/workshop_lvl1.png",
@@ -23,6 +28,7 @@ const BUILDING_SPRITES := {
 	"pet_shelter": "res://assets/sprites/buildings/pet_shelter_lvl1.png",
 	"crashed_ship": "res://assets/sprites/buildings/crashed_ship.png"
 }
+
 const UI_SPRITES := {
 	"logo_mars": "res://assets/ui/logo_mars.png",
 	"menu_bg": "res://assets/ui/menu_bg.png",
@@ -50,6 +56,7 @@ const CHARACTER_ANIMATIONS := {
 	"mine": [56, 57, 58, 59],
 	"run": [64, 65, 66, 67]
 }
+
 const PET_ANIMATIONS := {
 	"idle_down": [0],
 	"idle_up": [0],
@@ -60,6 +67,7 @@ const PET_ANIMATIONS := {
 	"walk_right": [24, 25, 26, 27],
 	"walk_left": [32, 33, 34, 35]
 }
+
 const ROVER_ANIMATIONS := {
 	"idle": [0],
 	"drive_right": [7, 8, 9, 10],
@@ -76,7 +84,7 @@ static func character_frames(character_id: String) -> SpriteFrames:
 	if texture == null:
 		return null
 	var is_pet := character_id.begins_with("pet_")
-	var layout: Dictionary = PET_ANIMATIONS if is_pet else CHARACTER_ANIMATIONS
+	var layout := PET_ANIMATIONS if is_pet else CHARACTER_ANIMATIONS
 	var rows := 5 if is_pet else 9
 	var columns := 8
 	return SPRITE_SHEET_BUILDER.build_sprite_frames(texture, columns, rows, layout, 8.0, true, true)

@@ -41,6 +41,10 @@ static func badge_style() -> StyleBoxFlat:
 	style.content_margin_right = 5
 	return style
 
+static func load_texture(path: String) -> Texture2D:
+	var tex := load(path) as Texture2D
+	return tex
+
 static func apply_button(button: Button, primary: bool = false, compact: bool = false) -> void:
 	var normal := StyleBoxFlat.new()
 	var hover := StyleBoxFlat.new()

@@ -16,12 +16,15 @@ func _draw() -> void:
 			draw_line(center + Vector2(-5, 2), center + Vector2(5, 2), copper, 1.5, true)
 			draw_line(center + Vector2(-5, 7), center + Vector2(2, 7), copper, 1.5, true)
 		"map":
-			draw_arc(center, 9.0, 0.0, TAU, 30, copper, 1.7, true)
-			draw_line(center + Vector2(-9, 4), center + Vector2(1, -6), Color("#F3EEE7"), 1.3, true)
-			draw_line(center + Vector2(1, -6), center + Vector2(9, 2), Color("#F3EEE7"), 1.3, true)
-			draw_circle(center + Vector2(-8, 4), 2.0, copper)
-			draw_circle(center + Vector2(1, -6), 2.0, copper)
-			draw_circle(center + Vector2(9, 2), 2.0, copper)
+			# Mars globe / map icon
+			draw_circle(center, 9.0, Color("#F3EEE7"), false, 1.7)
+			draw_circle(center, 2.0, copper)
+			draw_line(center + Vector2(0, -7), center + Vector2(0, 7), copper, 1.3, true)
+			draw_line(center + Vector2(-7, 0), center + Vector2(7, 0), copper, 1.3, true)
+			draw_line(center + Vector2(-5, -5), center + Vector2(5, 5), copper, 1.3, true)
+			draw_line(center + Vector2(5, -5), center + Vector2(-5, 5), copper, 1.3, true)
+			draw_circle(center + Vector2(-4, -4), 1.5, copper)
+			draw_circle(center + Vector2(4, 4), 1.5, copper)
 		"settings":
 			draw_circle(center, 8.0, copper, false, 2.0)
 			draw_circle(center, 3.0, Color("#F3EEE7"), false, 1.6)

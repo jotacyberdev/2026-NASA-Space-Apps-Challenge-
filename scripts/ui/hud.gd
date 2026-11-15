@@ -278,13 +278,14 @@ func _setup_quickbar() -> void:
 		var content := VBoxContainer.new()
 		content.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		content.add_theme_constant_override("separation", 1)
+		content.alignment = 1
 		margin.add_child(content)
 		var key_badge_panel := PanelContainer.new()
 		key_badge_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		key_badge_panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		var badge_style := WARM_THEME.badge_style()
 		key_badge_panel.add_theme_stylebox_override("panel", badge_style)
-		var key_badge := Label.new()
+		var key_badge := Label.new()	
 		key_badge.text = "[%d]" % (index + 1)
 		key_badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		key_badge.add_theme_font_size_override("font_size", 9)
@@ -783,14 +784,31 @@ func _show_notice(title: String, message: String) -> void:
 	show_choices(title, message, [])
 
 func on_world_interaction(object_id: String) -> void:
+	if object_id.begins_with("resource_"):
+		var node_id := object_id.replace("resource_", "")
+		if GameManager.collect_resource(node_id):
+			var node_data = {
+				"metal_scrap_1": {"item": "metal", "amount": 5},
+				"metal_scrap_2": {"item": "metal", "amount": 5},
+				"polymer_crystal_1": {"item": "polymer", "amount": 3},
+				"polymer_crystal_2": {"item": "polymer", "amount": 3},
+				"mineral_deposit_1": {"item": "metal", "amount": 8},
+				"mineral_deposit_2": {"item": "metal", "amount": 8},
+			}
+			if node_data.has(node_id):
+				var data = node_data[node_id]
+				var item_name = GameManager.ITEM_NAMES.get(str(data["item"]), str(data["item"]))
+				var amount := int(data["amount"])
+				_show_notice("Recurso coletado", "Obtido %d x %s." % [amount, item_name])
+		else:
+			_show_notice("Recurso", "Este recurso já foi coletado.")
+		return
 	match object_id:
 		"cache":
 			if GameManager.collect_initial_cache():
 				_show_notice("Suprimentos recuperados", "Materiais, ração, água e um kit médico foram adicionados à mochila.")
-			elif not GameManager.cache_opened:
-				_show_notice("Mochila cheia", "Libere espaço antes de recolher os suprimentos.")
 			else:
-				_show_notice("Baú vazio", "Os suprimentos deste baú já foram recolhidos.")
+				_show_notice("Baú de suprimentos", "O baú já foi esvaziado anteriormente. Não há mais itens para coletar.")
 		"vehicle":
 			if GameManager.tutorial_step == 3 and GameManager.start_exploration():
 				show_choices("Exploração inicial", "O rover ainda funciona. Escolha como investigar o local do impacto.", [
@@ -811,6 +829,9 @@ func on_world_interaction(object_id: String) -> void:
 				_show_notice("Acampamento", "O tutorial do Dia 1 já foi concluído.")
 			else:
 				_show_notice("Acampamento", "Nenhuma ação necessária neste ponto.")
+		"habitat_door":
+			GameManager.restore_at_habitat()
+			_show_notice("Habitat", "Oxigênio e energia restaurados dentro do abrigo.")
 
 func _resolve_exploration(choice: String) -> void:
 	if not GameManager.resolve_exploration(choice):

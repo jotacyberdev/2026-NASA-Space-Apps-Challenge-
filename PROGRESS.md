@@ -174,9 +174,34 @@ Data: 2026-11-14
 - Para exportar: criar um preset **Windows Desktop** em **Project > Export**, garantir os templates correspondentes à versão do editor e exportar o executável. Esta sessão não gerou um `.exe`.
 
 
-## Atualização da Identidade Visual e Telas (Novembro 2026)
+## Correções Visuais e de Interface (Novembro 2026)
 
-- **Identidade Visual Quente:** Aplicada a paleta marrom-terroso e laranja-âmbar (`WarmSciFiTheme`) ao HUD, barras de atalho, atalhos rápidos, títulos, descrições, modais (Inventário, Fabricação, Construção, Missões, Diário) e ao Radar/Mapa marciano.
-- **Tela de Criação de Personagem:** Refatorados estilos dos botões de seleção, campo de texto (LineEdit) e painéis para a identidade visual aquecida.
-- **Tela de Introdução:** Ilustrações vetoriais, céu, estação e elementos ajustados para paleta quente e cinemática alinhada ao tema do jogo.
-- **Polimento e Estabilidade:** Verificadas todas as referências de nós e chamadas de método nos scripts `mars_base.gd`, `mars_radar.gd`, `hud.gd` e `character_creation.gd`, garantindo ausência de referências nulas no Godot 4.x.
+### Item 1 - Menu Principal
+- `scripts/menus/main_menu.gd`: Tenta carregar `res://assets/ui/bg_main_menu.png` como fundo (fallback para cor sólida se não existir).
+- `scripts/menus/main_menu.gd`: Espaçamento entre ícone e texto dos botões aumentado (8 espaços, ícone 34x34 com offset 18).
+- `scripts/menus/main_menu.gd`: Separation do VBoxContainer aumentado de 10 para 16.
+
+### Item 2 - Janela de Configurações
+- `scripts/menus/main_menu.gd`: Borda do painel usa `WARM_THEME.COPPER` sem cinza externo.
+- `scripts/menus/main_menu.gd`: Botão OK ocultado; fecha apenas com ESC ou clique no X.
+
+### Item 3, 4, 5 - Criação de Personagem
+- `scripts/menus/character_creation.gd`: Carrega retratos reais de `res://assets/sprites/characters/` (`portrait_female.png`, `portrait_male.png`, `portrait_laika.png`, `portrait_ham.png`) com `TEXTURE_FILTER_NEAREST`.
+- `scripts/menus/character_creation.gd`: Exibe retrato dentro de cada card de seleção de gênero (FEMININO/MASCULINO) e mascote (LAIKA/HAM).
+- `scripts/menus/character_preview.gd`: Carrega sprites reais (`astronaut_female_walk_grid.png`, `astronaut_male_walk_grid.png`, `pet_laika_walk_grid.png`, `pet_ham_walk_grid.png`) com fallback para desenho procedural.
+
+### Item 6, 7, 8 - Tela de Introdução
+- `scenes/story/introduction.tscn`: PageLabel com `bbcode_enabled = true` e pontos de progresso do mesmo tamanho.
+- `scripts/story/introduction.gd`: PROGRESS_DOTS usa BBCode com cores distintas para ativo/inativo.
+- `scripts/story/introduction_illustration.gd`: Slide 1 - satélite centralizado exatamente na linha da órbita; risco horizontal removido.
+- `scripts/story/introduction_illustration.gd`: Slide 2 - paraquedas reduzido (0.15 → 0.10) e `clip_contents = true` no IllustrationPanel.
+- `scripts/story/introduction_illustration.gd`: Slide 3 - nave em queda com proporções corretas, pernas de pouso alinhadas, chamas de reentrada animadas.
+
+### Item 10 - Hotbar
+- `scripts/ui/hud.gd`: Números de atalho [1]-[8] centralizados perfeitamente nos slots via `content.alignment = 1` e `SIZE_SHRINK_CENTER`.
+
+### Item 16 - Ícone de Mapa no HUD
+- `scripts/ui/hud_action_icon.gd`: Ícone do mapa redesenhado como globo de Marte com grade e marcadores.
+
+### Itens 9 - Construções da Base
+- `scripts/world/base_structure_view.gd`: Cada uma das 9 construções carrega sprite `.png` distinto de `res://assets/sprites/buildings/` (habitat, workshop, warehouse, greenhouse, solar_panel, comm_antenna, laboratory, pet_shelter, miner) com fallback para `ASSET_REGISTRY`.

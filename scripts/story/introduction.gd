@@ -18,12 +18,17 @@ const PAGES: Array = [
 		"text": "A astronauta desperta ferida, mas viva. O tutorial do dia 1 começa com a recuperação do acampamento e a sobrevivência inicial."
 	}
 ]
-const PROGRESS_DOTS := ["●  ○  ○  ○", "○  ●  ○  ○", "○  ○  ●  ○", "○  ○  ○  ●"]
+const PROGRESS_DOTS := [
+	"[center][color=#FF9E2C]●[/color] [color=#554433]○[/color] [color=#554433]○[/color] [color=#554433]○[/color][/center]",
+	"[center][color=#554433]○[/color] [color=#FF9E2C]●[/color] [color=#554433]○[/color] [color=#554433]○[/color][/center]",
+	"[center][color=#554433]○[/color] [color=#554433]○[/color] [color=#FF9E2C]●[/color] [color=#554433]○[/color][/center]",
+	"[color=#554433]○[/color] [color=#554433]○[/color] [color=#554433]○[/color] [color=#FF9E2C]●[/color]"
+]
 const WARM_THEME := preload("res://scripts/ui/warm_sci_fi_theme.gd")
 
 @onready var title_label: Label = $Background/Panel/Margin/Content/TitleLabel
 @onready var body_label: Label = $Background/Panel/Margin/Content/BodyLabel
-@onready var page_label: Label = $Background/Panel/Margin/Content/PageLabel
+@onready var page_label: Control = $Background/Panel/Margin/Content/PageLabel
 @onready var illustration: Control = $Background/Panel/Margin/Content/IllustrationPanel
 @onready var continue_button: Button = $Background/Panel/Margin/Content/Controls/ContinueButton
 @onready var skip_button: Button = $Background/Panel/Margin/Content/Controls/SkipButton
@@ -36,6 +41,10 @@ func _ready() -> void:
 	WARM_THEME.apply_button(skip_button, false, true)
 	title_label.add_theme_color_override("font_color", WARM_THEME.AMBER)
 	body_label.add_theme_color_override("font_color", WARM_THEME.TEXT)
+	if page_label is RichTextLabel:
+		page_label.bbcode_enabled = true
+		page_label.fit_content = true
+		page_label.scroll_active = false
 	page_label.add_theme_color_override("font_color", WARM_THEME.AMBER)
 	current_page = 0
 	update_page()
@@ -45,7 +54,10 @@ func update_page() -> void:
 	title_label.text = page["title"].to_upper()
 	body_label.text = page["text"]
 	illustration.call("set_slide", current_page)
-	page_label.text = PROGRESS_DOTS[current_page]
+	if page_label is RichTextLabel:
+		page_label.text = PROGRESS_DOTS[current_page]
+	else:
+		page_label.text = "● ○ ○ ○"
 	continue_button.text = "CONTINUAR" if current_page < PAGES.size() - 1 else "INICIAR DIA 1"
 
 func _style_story_button(button: Button, is_primary: bool) -> void:
